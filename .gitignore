@@ -90,3 +90,9 @@ target/
 
 # Notebook to test features
 /notebooks/Testing.ipynb
+/models
+/references
+/reports
+/src/models
+/src/visualization
+/src/features
