@@ -87,3 +87,6 @@ target/
 
 # Mypy cache
 .mypy_cache/
+
+# Notebook to test features
+/notebooks/Testing.ipynb
