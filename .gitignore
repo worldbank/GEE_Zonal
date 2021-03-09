@@ -90,6 +90,7 @@ target/
 
 # Notebook to test features
 /notebooks/Testing.ipynb
+/src/garbage.py
 /models
 /references
 /reports
