@@ -4,7 +4,6 @@ import pandas as pd
 
 pd.set_option('display.max_colwidth', None)
 repo_dir = os.path.dirname(os.path.realpath(__file__)) # if Notebooks could also access thorugh ..
-ee_catalog = None
 
 class Catalog(object):
     '''
@@ -13,7 +12,6 @@ class Catalog(object):
     All credit goes to Samapriya Roy!
     '''
     def __init__(self, datasets = None, redownload = False):
-        
         def load_datasets():
             if redownload == True:
                 datasets = pd.read_json("https://raw.githubusercontent.com/samapriya/Earth-Engine-Datasets-List/master/gee_catalog.json")
@@ -24,8 +22,6 @@ class Catalog(object):
             datasets['tags'] = datasets.tags.apply(lambda x: x.split(', '))
             datasets['start_date'] = pd.to_datetime(datasets.start_date)
             datasets['end_date'] = pd.to_datetime(datasets.end_date)
-            global ee_catalog
-            ee_catalog = datasets.copy()
             return datasets
         self.datasets = load_datasets() if datasets is None else datasets
         
@@ -104,11 +100,11 @@ class ZonalStats(object):
     '''
     def __init__(self, collection_id, target_features, statistic_type, output_name,
                 freq = "monthly", temporal_stat = "mean", band = None, output_dir = "gdrive_folder"):
-        global ee_catalog
-        if ee_catalog is None:
-            cat = Catalog()
         self.collection_id = collection_id
+        self.collection_suffix = collection_id[collection_id.rfind("/")+1:]
         self.ee_dataset = ee.ImageCollection(collection_id) if band is None else ee.ImageCollection(collection_id).select(band)
+        cat = Catalog()
+        self.metadata = cat.datasets.loc[cat.datasets.id==collection_id].iloc[0]
         self.target_features = target_features
         self.statistic_type = statistic_type
         self.freq = freq
@@ -121,19 +117,15 @@ class ZonalStats(object):
         '''
         Create list of years from a given dataset
         '''
-        global ee_catalog
-        dataset = ee_catalog.loc[ee_catalog.id==self.collection_id].iloc[0]
-        years = list(range(dataset.startyear, dataset.endyear, 1))
+        years = list(range(self.metadata.startyear, self.metadata.endyear, 1))
         return ee.List(years)
 
     def ymList(self):
         '''
         Create list of year/month pairs from a given dataset
         '''
-        global ee_catalog
-        dataset = ee_catalog.loc[ee_catalog.id==self.collection_id].iloc[0]
-        start = dataset.start_date
-        end = dataset.end_date
+        start = self.metadata.start_date
+        end = self.metadata.end_date
         ym_range = pd.date_range(datetime(start.year, start.month, 1), datetime(end.year, end.month, 1), freq="MS")
         ym_range = list(date.strftime("%Y%m") for date in ym_range)
         return ee.List(ym_range)
@@ -150,7 +142,6 @@ class ZonalStats(object):
         return ee.List(ymd).distinct()
     
     def temporalStack(self, date_list, freq, stat):
-        
         allowed_statistics_ts = {
             "mean": ee.Reducer.mean(),
             "max": ee.Reducer.max(),
@@ -179,11 +170,10 @@ class ZonalStats(object):
         def aggregate_annual(y):
             y = ee.Number(y)
             annual = self.ee_dataset.filter(ee.Filter.calendarRange(y, y, 'year')) \
-                .reduce(allowed_statistics[stat]) \
+                .reduce(allowed_statistics_ts[stat]) \
                 .set('year', y) \
                 .set('system:index', ee.String(y.format()))            
             return annual
-        
         if freq=="monthly":
             byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_monthly))
         if freq=="annual":
@@ -196,7 +186,6 @@ class ZonalStats(object):
         elif self.freq =="annual":
             timesteps = self.yList()
         byTimesteps = self.temporalStack(timesteps, self.freq, self.temporal_stat)
-        
         allowed_statistics = {
             "mean": ee.Reducer.mean(),
             "max": ee.Reducer.max(),
@@ -217,7 +206,7 @@ class ZonalStats(object):
         )
         self.task = ee.batch.Export.table.toDrive(
             collection = zs,
-            description = 'Some Description Here',
+            description = f'Zonal statistics {self.statistic_type} of {self.collection_suffix}',
             fileFormat = 'CSV',    
             folder = self.output_dir,
             fileNamePrefix = self.output_name,
