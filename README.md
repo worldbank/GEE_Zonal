@@ -38,7 +38,6 @@ import ee
 from gee_tools import ZonalStats
 ee.Initialize()
 AOIs = ee.FeatureCollection('<id of ee.FeatureCollection>')
-# Image Collection id, ee. Feature Collection, statistic type
 zs = ZonalStats(collection_id = 'LANDSAT/LC08/C01/T1_8DAY_NDVI', target_features = AOIs, statistic_type = "mean", output_name = "pretty_output")
 
 ```
