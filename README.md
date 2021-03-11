@@ -15,7 +15,7 @@ from gee_tools import Catalog
 cat = Catalog()
 ```
 
-Pandas Data Frame of the Earth Engine data catalog, retrieved from [Earth-Engine-Datasets-List](https://github.com/samapriya/Earth-Engine-Datasets-List) and saved to src folder:
+The catalog contains a *dataset* variable - a pandas Data Frame of the Earth Engine data catalog - retrieved from [Earth-Engine-Datasets-List](https://github.com/samapriya/Earth-Engine-Datasets-List) and also saved in the src folder.
 
 ```python
 cat.datasets
@@ -24,7 +24,6 @@ cat.datasets
 *Search functions*
 
 ```python
-cat.datasets
 results = cat.search_tags("ndvi")
 results = results.search_by_period(1985, 2021)
 results = results.search_title("landsat")
@@ -39,17 +38,20 @@ import ee
 from gee_tools import ZonalStats
 ee.Initialize()
 AOIs = ee.FeatureCollection('<id of ee.FeatureCollection>')
-zs = ZonalStats('LANDSAT/LC08/C01/T1_8DAY_NDVI', AOIs, "mean", "pretty_output")
+# Image Collection id, ee. Feature Collection, statistic type
+zs = ZonalStats(collection_id = 'LANDSAT/LC08/C01/T1_8DAY_NDVI', target_features = AOIs, statistic_type = "mean", output_name = "pretty_output")
+
 ```
 
 See notebooks and docstrings for more details on the input parameters for ZonalStats().
 
-#### Environment Setup
+## Environment Setup
 
 Currently only depends on *earthengine-api* and *pandas*. In the future we will probably include *geopandas* and *geemap*.
 
 ```{important}
 conda create -n ee
+conda activate ee
 conda install -c conda-forge earthengine-api
 earthengine authenticate
 conda install -c conda-forge pandas
@@ -61,6 +63,8 @@ Or, using the environment.yml file (hasn't been tested)
 
 ```{important}
 conda env create -f environment.yml
+conda activate ee
+earthengine authenticate
 ```
 
 ## Project Checklist
