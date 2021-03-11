@@ -1,11 +1,74 @@
 # GEE Zonal
 
-The template creates a project structure inspired by the [Cookiecutter Data Science](https://drivendata.github.io/cookiecutter-data-science/) with an out-of-box [Jupyter Book](https://jupyterbook.org/intro.html) published automatically on [GitHub Pages](https://pages.github.com).
+This package contains two classes to ease the process of getting statistics from Google Earth Engine datasets.
 
-Here are some of the practices that project template aims to encourage:
-- Reproducibility
-- Transparency
-- Credibility
+The GOST team will use this to build a dataset for the Poverty GP, and we will also use this space to discuss Earth Engine issues and use cases.
+
+## Usage
+
+**Catalog()**
+
+Inventory of Earth Engine datasets with some functions to search catalog by tags, title, and year / time period
+
+```python
+from gee_tools import Catalog
+cat = Catalog()
+```
+
+Pandas Data Frame of the Earth Engine data catalog, retrieved from [Earth-Engine-Datasets-List](https://github.com/samapriya/Earth-Engine-Datasets-List) and saved to src folder:
+
+```python
+cat.datasets
+```
+
+*Search functions*
+
+```python
+cat.datasets
+results = cat.search_tags("ndvi")
+results = results.search_by_period(1985, 2021)
+results = results.search_title("landsat")
+```
+
+**ZonalStats()**
+
+Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
+
+```python
+import ee
+from gee_tools import ZonalStats
+ee.Initialize()
+AOIs = ee.FeatureCollection('<id of ee.FeatureCollection>')
+zs = ZonalStats('LANDSAT/LC08/C01/T1_8DAY_NDVI', AOIs, "mean", "pretty_output")
+```
+
+See notebooks and docstrings for more details on the input parameters for ZonalStats().
+
+#### Environment Setup
+
+Currently only depends on *earthengine-api* and *pandas*. In the future we will probably include *geopandas* and *geemap*.
+
+```{important}
+conda create -n ee
+conda install -c conda-forge earthengine-api
+earthengine authenticate
+conda install -c conda-forge pandas
+pip install ipykernel​
+python -m ipykernel install --user --name ee --display-name "Earth Engine"
+```
+
+Or, using the environment.yml file (hasn't been tested)
+
+```{important}
+conda env create -f environment.yml
+```
+
+## Project Checklist
+
+- [ ] Go through variables for Poverty GP dataset
+- [ ] Test downloading files directly from Google Drive to local drive
+- [ ] Add capability to interact with shapefiles/geopandas like geemap
+- [ ] Improve documentation / environment setup
 
 ## Resources
 
@@ -27,55 +90,21 @@ Here are some of the practices that project template aims to encourage:
 - [Jupyter Book](https://jupyterbook.org/intro.html)
     > Jupyter Book is an open source project for building beautiful, publication-quality books and documents from computational material.
 
-## Project Checklist
-
-```{important}
-Coming Soon
-```
-
 ## Project Organization
 
 ```markdown
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
-    ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
-    │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
-    │
     ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
     │                         the creator's initials, and a short `-` delimited description, e.g.
     │                         `1.0-jqp-initial-data-exploration`.
     │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-    │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures        <- Generated graphics and figures to be used in reporting
-    │
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
     │                         generated with `pip freeze > requirements.txt`
-    │
     ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
+    │   ├── gee_tools.py   <- Code for Python classes
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 ```

@@ -1,4 +1,8 @@
-import ee, geemap, os, re
+import ee, os, re
+try:
+    import geemap
+except:
+    print("geemap not available")
 from datetime import datetime
 import pandas as pd
 
@@ -90,7 +94,7 @@ class ZonalStats(object):
     :param output_name: file name for output statistics
     :type output_name: str
     :param freq: Optional, temporal frequency for aggregation
-    :type freq: str (monthly or annual, defaults to monthly)
+    :type freq: str (monthly, annual, or original) defaults to monthly. original uses the raw temporal frequency of the dataset.
     :param temporal_stat: Optional, statistic for temporal aggregation
     :type temporal_stat: str (mean, max, median, min, or sum, defaults to mean)
     :param band: Optional, specify name of image band to use
@@ -150,12 +154,11 @@ class ZonalStats(object):
             "sum": ee.Reducer.sum(),
         }
         if freq not in ['monthly', 'annual']:
-            raise Exception("frequency must be one of annual or monthly")
+            raise Exception("frequency must be one of annual, monthly, or original")
         if stat not in allowed_statistics_ts.keys():
             raise Exception(
                 "satistic must be one of be one of {}".format(", ".join(list(allowed_statistics_ts.keys())))
                 )
-        
         def aggregate_monthly(ym):
             date = ee.Date.parse("YYYYMM", ym)
             y = date.get('year')
@@ -178,6 +181,8 @@ class ZonalStats(object):
             byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_monthly))
         if freq=="annual":
             byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_annual))
+        if freq=="original":
+            byTime = self.ee_dataset
         return byTime.toBands()
         
     def runZonalStats(self):
