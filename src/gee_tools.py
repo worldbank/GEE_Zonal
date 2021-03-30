@@ -93,6 +93,12 @@ class ZonalStats(object):
     :type statistic_type: str (one of mean, max, median, min, sum, std, var)
     :param output_name: file name for output statistics
     :type output_name: str
+    :param scale: scale for calculation
+    :type scale: int
+    :param min_threshold: filter out values lower than min_threshold
+    :type min_threshold: int
+    :param water_mask: filter out water
+    :type water_mask: boolean
     :param freq: Optional, temporal frequency for aggregation
     :type freq: str (monthly, annual, or original) defaults to monthly. original uses the raw temporal frequency of the dataset.
     :param temporal_stat: Optional, statistic for temporal aggregation
@@ -102,7 +108,8 @@ class ZonalStats(object):
     :param output_dir: Optional, google drive directory to save outputs
     :type output_dir: str (defaults to gdrive_folder)
     '''
-    def __init__(self, collection_id, target_features, statistic_type, output_name,
+    def __init__(self, collection_id, target_features, statistic_type, output_name, 
+                scale = 250, min_threshold = None, water_mask = False,
                 freq = "monthly", temporal_stat = "mean", band = None, output_dir = "gdrive_folder"):
         self.collection_id = collection_id
         self.collection_suffix = collection_id[collection_id.rfind("/")+1:]
@@ -116,6 +123,9 @@ class ZonalStats(object):
         self.output_dir = output_dir
         self.output_name = output_name
         self.task = None
+        self.scale = scale
+        self.min_threshold = min_threshold
+        self.water_mask = water_mask
 
     def yList(self):
         '''
@@ -151,6 +161,7 @@ class ZonalStats(object):
             "max": ee.Reducer.max(),
             "median": ee.Reducer.median(),
             "min": ee.Reducer.min(),
+            "std": ee.Reducer.stdDev(),
             "sum": ee.Reducer.sum(),
         }
         if freq not in ['monthly', 'annual']:
@@ -185,12 +196,27 @@ class ZonalStats(object):
             byTime = self.ee_dataset
         return byTime.toBands()
         
+    def applyWaterMask(self, image, year=None):
+        land_mask = ee.Image("MODIS/MOD44W/MOD44W_005_2000_02_24").select('water_mask').eq(0)
+        return image.updateMask(land_mask)
+        
+    def applyMinThreshold(self, image, min_threshold):
+        bool_mask = image.gte(min_threshold)
+        return image.updateMask(bool_mask)
+    
     def runZonalStats(self):
         if self.freq == "monthly":
             timesteps = self.ymList()
         elif self.freq =="annual":
             timesteps = self.yList()
         byTimesteps = self.temporalStack(timesteps, self.freq, self.temporal_stat)
+
+        # pre-processing
+        if self.water_mask == True:
+            byTimesteps = self.applyWaterMask(byTimesteps)
+        if self.min_threshold is not None:
+            byTimesteps = self.applyMinThreshold(byTimesteps, self.min_threshold)            
+
         allowed_statistics = {
             "mean": ee.Reducer.mean(),
             "max": ee.Reducer.max(),
@@ -199,6 +225,9 @@ class ZonalStats(object):
             "sum": ee.Reducer.sum(),
             "std": ee.Reducer.stdDev(),
             "var": ee.Reducer.variance(),
+            "all" : ee.Reducer.mean() \
+                .combine(ee.Reducer.minMax(), sharedInputs=True) \
+                .combine(ee.Reducer.stdDev(), sharedInputs=True)
         }
         if self.statistic_type not in allowed_statistics.keys():
             raise Exception(
@@ -207,7 +236,7 @@ class ZonalStats(object):
         zs = ee.Image(byTimesteps).reduceRegions(
             collection = self.target_features, 
             reducer = allowed_statistics[self.statistic_type],
-            scale = 30
+            scale = self.scale
         )
         self.task = ee.batch.Export.table.toDrive(
             collection = zs,
