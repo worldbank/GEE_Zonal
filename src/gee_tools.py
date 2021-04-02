@@ -90,7 +90,7 @@ class ZonalStats(object):
     :param target_features: vector features
     :type target_features: ee.FeatureCollection (for now)
     :param statistic_type: statistic to calculate by zone
-    :type statistic_type: str (one of mean, max, median, min, sum, std, var)
+    :type statistic_type: str (one of mean, max, median, min, sum, stddev, var)
     :param output_name: file name for output statistics
     :type output_name: str
     :param scale: scale for calculation
@@ -99,18 +99,18 @@ class ZonalStats(object):
     :type min_threshold: int
     :param water_mask: filter out water
     :type water_mask: boolean
-    :param freq: Optional, temporal frequency for aggregation
-    :type freq: str (monthly, annual, or original) defaults to monthly. original uses the raw temporal frequency of the dataset.
+    :param frequency: Optional, temporal frequency for aggregation
+    :type frequency: str (monthly, annual, or original) defaults to original (raw temporal frequency of the dataset).
     :param temporal_stat: Optional, statistic for temporal aggregation
-    :type temporal_stat: str (mean, max, median, min, or sum, defaults to mean)
+    :type temporal_stat: str (mean, max, median, min, or sum, defaults to None)
     :param band: Optional, specify name of image band to use
     :type band: str
     :param output_dir: Optional, google drive directory to save outputs
     :type output_dir: str (defaults to gdrive_folder)
     '''
     def __init__(self, collection_id, target_features, statistic_type, output_name, 
-                scale = 250, min_threshold = None, water_mask = False,
-                freq = "monthly", temporal_stat = "mean", band = None, output_dir = "gdrive_folder"):
+                scale = 250, min_threshold = None, water_mask = False, tile_scale = 4,
+                frequency = "original", temporal_stat = None, band = None, output_dir = "gdrive_folder"):
         self.collection_id = collection_id
         self.collection_suffix = collection_id[collection_id.rfind("/")+1:]
         self.ee_dataset = ee.ImageCollection(collection_id) if band is None else ee.ImageCollection(collection_id).select(band)
@@ -118,7 +118,7 @@ class ZonalStats(object):
         self.metadata = cat.datasets.loc[cat.datasets.id==collection_id].iloc[0]
         self.target_features = target_features
         self.statistic_type = statistic_type
-        self.freq = freq
+        self.frequency = frequency
         self.temporal_stat = temporal_stat
         self.output_dir = output_dir
         self.output_name = output_name
@@ -126,6 +126,7 @@ class ZonalStats(object):
         self.scale = scale
         self.min_threshold = min_threshold
         self.water_mask = water_mask
+        self.tile_scale = tile_scale
 
     def yList(self):
         '''
@@ -161,11 +162,9 @@ class ZonalStats(object):
             "max": ee.Reducer.max(),
             "median": ee.Reducer.median(),
             "min": ee.Reducer.min(),
-            "std": ee.Reducer.stdDev(),
             "sum": ee.Reducer.sum(),
+            "stddev": ee.Reducer.stdDev(),
         }
-        if freq not in ['monthly', 'annual']:
-            raise Exception("frequency must be one of annual, monthly, or original")
         if stat not in allowed_statistics_ts.keys():
             raise Exception(
                 "satistic must be one of be one of {}".format(", ".join(list(allowed_statistics_ts.keys())))
@@ -192,8 +191,6 @@ class ZonalStats(object):
             byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_monthly))
         if freq=="annual":
             byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_annual))
-        if freq=="original":
-            byTime = self.ee_dataset
         return byTime.toBands()
         
     def applyWaterMask(self, image, year=None):
@@ -205,11 +202,13 @@ class ZonalStats(object):
         return image.updateMask(bool_mask)
     
     def runZonalStats(self):
-        if self.freq == "monthly":
+        if self.frequency not in ['monthly', 'annual', 'original']:
+            raise Exception("frequency must be one of annual, monthly, or original")
+        if self.frequency == "monthly":
             timesteps = self.ymList()
-        elif self.freq =="annual":
+        elif self.frequency =="annual":
             timesteps = self.yList()
-        byTimesteps = self.temporalStack(timesteps, self.freq, self.temporal_stat)
+        byTimesteps = self.ee_dataset.toBands() if self.frequency=="original" else self.temporalStack(timesteps, self.frequency, self.temporal_stat)
 
         # pre-processing
         if self.water_mask == True:
@@ -223,7 +222,7 @@ class ZonalStats(object):
             "median": ee.Reducer.median(),
             "min": ee.Reducer.min(),
             "sum": ee.Reducer.sum(),
-            "std": ee.Reducer.stdDev(),
+            "stddev": ee.Reducer.stdDev(),
             "var": ee.Reducer.variance(),
             "all" : ee.Reducer.mean() \
                 .combine(ee.Reducer.minMax(), sharedInputs=True) \
@@ -236,13 +235,31 @@ class ZonalStats(object):
         zs = ee.Image(byTimesteps).reduceRegions(
             collection = self.target_features, 
             reducer = allowed_statistics[self.statistic_type],
-            scale = self.scale
+            scale = self.scale,
+            tileScale = self.tile_scale
         )
         self.task = ee.batch.Export.table.toDrive(
             collection = zs,
-            description = f'Zonal statistics {self.statistic_type} of {self.collection_suffix}',
+            description = f'Zonal statistics {self.statistic_type} of {self.temporal_stat} {self.collection_suffix}',
             fileFormat = 'CSV',    
             folder = self.output_dir,
             fileNamePrefix = self.output_name,
         )
         self.task.start()
+    
+    def reportRunTime(self):
+        start_time = self.task.status()['start_timestamp_ms']
+        update_time = self.task.status()['update_timestamp_ms']
+        if self.task.status()['state'] == "RUNNING":
+            delta = datetime.now() - datetime.fromtimestamp(start_time/1000)
+            print("Still running")
+            print(f"Runtime: {delta.seconds//60} minutes and {delta.seconds % 60} seconds")
+        if self.task.status()['state'] == "COMPLETED":
+            delta = datetime.fromtimestamp(update_time/1000) - datetime.fromtimestamp(start_time/1000)
+            print("Completed")
+            print(f"Runtime: {delta.seconds//60} minutes and {delta.seconds % 60} seconds")
+        if self.task.status()['state'] == "FAILED":
+            print("Failed!")
+            print(self.task.status()['error_message'])
+        if self.task.status()['state'] == "READY":
+            print("Status is Ready, hasn't started")

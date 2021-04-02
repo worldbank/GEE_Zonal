@@ -15,7 +15,7 @@ from gee_tools import Catalog
 cat = Catalog()
 ```
 
-The catalog contains a *dataset* variable - a pandas Data Frame of the Earth Engine data catalog - retrieved from [Earth-Engine-Datasets-List](https://github.com/samapriya/Earth-Engine-Datasets-List) and also saved in the src folder.
+The catalog contains a *datasets* variable - a pandas Data Frame of the Earth Engine data catalog - retrieved from [Earth-Engine-Datasets-List](https://github.com/samapriya/Earth-Engine-Datasets-List) and also saved in the src folder.
 
 ```python
 cat.datasets
@@ -38,7 +38,13 @@ import ee
 from gee_tools import ZonalStats
 ee.Initialize()
 AOIs = ee.FeatureCollection('<id of ee.FeatureCollection>')
-zs = ZonalStats(collection_id = 'LANDSAT/LC08/C01/T1_8DAY_NDVI', target_features = AOIs, statistic_type = "mean", output_name = "pretty_output")
+zs = ZonalStats(
+  collection_id = 'LANDSAT/LC08/C01/T1_8DAY_NDVI',
+  target_features = AOIs, 
+  statistic_type = "mean", 
+  freq = "annual",
+  output_name = "pretty_output"
+)
 
 ```
 
