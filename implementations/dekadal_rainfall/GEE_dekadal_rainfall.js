@@ -1,10 +1,10 @@
 //bounds of the reference layer
 var bounds = ee.FeatureCollection(table).geometry().bounds()
-//dekads
 var dekadsFC = ee.FeatureCollection(dekads)
 //get the CHIRPS and filtered with bounds
 var CHIRPS = ee.ImageCollection("UCSB-CHG/CHIRPS/DAILY").filterBounds(bounds);
-//precipitation band
+
+//get the precipitation band
 var bandName = 'precipitation'
 
 var dekadalCHIRPS =  ee.FeatureCollection(
@@ -13,21 +13,20 @@ var dekadalCHIRPS =  ee.FeatureCollection(
           var end = d.get('ed');
           var id = d.get('id')
           return ee.FeatureCollection(table.map(function(feature){
-            // sum
             var filteredImage = CHIRPS.filterDate(ini,end).sum().select(bandName)
-            var sum = filteredImage.reduceRegion({
-                  reducer: ee.Reducer.sum(),
+            var mean = filteredImage.reduceRegion({
+                  reducer: ee.Reducer.mean(),
                   geometry: feature.geometry(),
                   scale: 1000,
                   bestEffort:true
               });
-            var valSum = ee.Number(sum.get(bandName));
-            valSum = ee.Number(valSum).multiply(1000).round().divide(1000) //keep only 3 decimals
-          //returns a feature with null gemoetry
+            var valMean = ee.Number(mean.get(bandName));
+            valMean = ee.Number(valMean).multiply(100).round().divide(100) //keep only 2 decimals
+          
           return ee.Feature(null, {
               'uid' : ee.String(feature.get('pcode')).cat('-').cat(ee.String(id)),
               'pcode' : feature.get('pcode'),
-              'chirps_sum': valSum,
+              'rainfall_mm': valMean,
               'dekad': id,
           });
       }))
@@ -35,10 +34,12 @@ var dekadalCHIRPS =  ee.FeatureCollection(
   })
 ).flatten();
 
+//print(dekadalCHIRPS)
+
 //Export the data to a CSV
 Export.table.toDrive({
   collection:dekadalCHIRPS,
-  description:"iso3_dekadal_chirps",
+  description:"dekadal_rainfall",
   fileFormat:"CSV",
-  selectors:'uid,pcode,chirps_sum,dekad'
+  selectors:'uid,pcode,rainfall_mm,dekad'
 })
