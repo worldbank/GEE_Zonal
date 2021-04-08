@@ -55,7 +55,7 @@ var dailyTemp =  ee.FeatureCollection(
                 });
             var valMean = ee.Number(mean.get(bandName));
             valMean = ee.Number(ee.Algorithms.If(valMean,valMean,-999));
-            valMean = ee.Number(valMean).subtract(273.15).multiply(1000).round().divide(1000) //scale : 0.0001 and 3 digits
+            valMean = ee.Number(valMean).subtract(273.15).multiply(1000).round().divide(1000) //convert to celsius and 3 decimals
             
             //min
             var min = filteredImage.reduceRegion({
@@ -66,7 +66,7 @@ var dailyTemp =  ee.FeatureCollection(
                 });
             var valMin = ee.Number(min.get(bandName));
             valMin = ee.Number(ee.Algorithms.If(valMin,valMin,-999));
-            valMin = ee.Number(valMin).subtract(273.15).multiply(1000).round().divide(1000) //scale : 0.0001 and 3 digits
+            valMin = ee.Number(valMin).subtract(273.15).multiply(1000).round().divide(1000) //convert to celsius and 3 decimals
             
             //max
             var max = filteredImage.reduceRegion({
@@ -77,7 +77,7 @@ var dailyTemp =  ee.FeatureCollection(
                 });
             var valMax = ee.Number(max.get(bandName));
             valMax = ee.Number(ee.Algorithms.If(valMax,valMax,-999));
-            valMax = ee.Number(valMax).subtract(273.15).multiply(1000).round().divide(1000) //scale : 0.0001 and 3 digits
+            valMax = ee.Number(valMax).subtract(273.15).multiply(1000).round().divide(1000) //convert to celsius and 3 decimals
             
             //stdDev
             var stdDev = filteredImage.reduceRegion({
@@ -88,7 +88,7 @@ var dailyTemp =  ee.FeatureCollection(
                 });
             var valstdDev = ee.Number(stdDev.get(bandName));
             valstdDev = ee.Number(ee.Algorithms.If(valstdDev,valstdDev,-999));
-            valstdDev = ee.Number(valstdDev).multiply(1000).round().divide(1000) //scale : 0.0001 and 3 digits
+            valstdDev = ee.Number(valstdDev).multiply(1000).round().divide(1000) //convert to celsius and 3 decimals
             
             return ee.Feature(null, {
                 'uid' : ee.String(feature.get('pcode')).cat('-').cat(ee.String(dayList.get(n))),
