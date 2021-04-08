@@ -125,7 +125,7 @@ The scripts generates a CSV file with the following fields:
 - **temp_stdDev**: Standard Deviation temperature. Rounded to 3 decimals.
 - **date**: day in the format YYYY-MM-dd.
 
-*No values are returned as -999.*
+*No values are returned as -999.*  
 */!\ Daily = large outputs.*
 
 Example:
