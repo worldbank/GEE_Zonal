@@ -4,7 +4,7 @@ Javascript script to export daily air temperature at 2m statistics by feature in
 
 Dataset used: [https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_DAILY](https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_DAILY)  
 Timeframe: **1979 - ~Now**  
-Precision: **0.25 arc degrees**
+Precision: **0.25 arc degrees**  
 Unit: **Celsius Degrees**, *can easily be set to Kelvin*  
 Stats returned: **mean**, **min**, **max**, **stdDev**
 
