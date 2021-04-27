@@ -1,0 +1,14 @@
+# Book settings
+title: 
+author: World Bank
+logo: images/logo.png
+
+repository:
+    url: https://github.com/worldbank/GEE_Zonal
+    branch: master  
+  
+html:
+    use_edit_page_button: true
+    use_repository_button: true
+    use_issues_button: true
+    baseurl: https://worldbank.org/

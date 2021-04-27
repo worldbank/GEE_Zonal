@@ -81,12 +81,6 @@ earthengine authenticate
 
 ## Resources
 
-- [Development Data Partnership](https://docs.datapartnership.org)
-    > A partnership between international organizations and companies, created to facilitate the use of third-party data in research and international development.
-
-- [Awesome Data Partnership](https://datapartnership.github.io/awesome-datapartnership/)
-    > A curated list of projects, data goods and derivative works associated with the Development Data Partnership
-
 - [The DIME Wiki](https://dimewiki.worldbank.org/wiki/Main_Page)
     > The DIME Wiki is a public good developed and maintained by DIME Analytics, a team which creates tools that improve the quality of impact evaluation research at DIME. The DIME Wiki is targeted to all researchers and M&E specialists at the World Bank, clients who are managing data collection efforts in the field, donor institutions, universities, NGOs, and governments. While there are many existing impact evaluation resources, none meet the specific gap the DIME Wiki aims to fulfill: a resource focused on practical implementation guidelines rather than theory, open to the public, easily searchable, suitable for users of varying levels of expertise, up-to-date with the latest technological advances in electronic data collection, with a vibrant network of editors who are experts in this field.
 
@@ -98,26 +92,3 @@ earthengine authenticate
 
 - [Jupyter Book](https://jupyterbook.org/intro.html)
     > Jupyter Book is an open source project for building beautiful, publication-quality books and documents from computational material.
-
-## Project Organization
-
-```markdown
-    ├── LICENSE
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   ├── gee_tools.py   <- Code for Python classes
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
-```
-
---------
-
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
