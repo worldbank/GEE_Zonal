@@ -62,6 +62,7 @@ earthengine authenticate
 conda install -c conda-forge pandas
 pip install ipykernel​
 python -m ipykernel install --user --name ee --display-name "Earth Engine"
+conda install -c conda-forge notebook
 ```
 
 Or, using the environment.yml file (hasn't been tested)

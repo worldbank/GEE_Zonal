@@ -1,5 +1,8 @@
 import ee, os, re
-import eemont
+try:
+    import eemont
+except:
+    print("eemont not available")
 try:
     import geemap
 except:
