@@ -248,14 +248,16 @@ class ZonalStats(object):
             scale = self.scale,
             tileScale = self.tile_scale
         )
-        self.task = ee.batch.Export.table.toDrive(
-            collection = zs,
-            description = f'Zonal statistics {self.statistic_type} of {self.temporal_stat} {self.collection_suffix}',
-            fileFormat = 'CSV',    
-            folder = self.output_dir,
-            fileNamePrefix = self.output_name,
-        )
-        self.task.start()
+        if self.output_dir != '' and self.output_name != '':
+            self.task = ee.batch.Export.table.toDrive(
+                collection = zs,
+                description = f'Zonal statistics {self.statistic_type} of {self.temporal_stat} {self.collection_suffix}',
+                fileFormat = 'CSV',    
+                folder = self.output_dir,
+                fileNamePrefix = self.output_name,
+            )
+            self.task.start()
+        return(zs)
     
     def reportRunTime(self):
         start_time = self.task.status()['start_timestamp_ms']

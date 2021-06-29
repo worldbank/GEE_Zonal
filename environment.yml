@@ -74,7 +74,7 @@ dependencies:
   - idna=2.10
   - importlib-metadata=3.7.0
   - importlib_metadata=3.7.0
-  - intel-openmp=2020.3
+  - intel-openmp
   - ipyevents=0.8.2
   - ipyfilechooser=0.4.2
   - ipykernel=5.2.0
@@ -137,19 +137,19 @@ dependencies:
   - lxml=4.6.2
   - lz4-c=1.9.3
   - lzo=2.10
-  - m2w64-gcc-libgfortran=5.3.0
-  - m2w64-gcc-libs=5.3.0
-  - m2w64-gcc-libs-core=5.3.0
-  - m2w64-gmp=6.1.0
-  - m2w64-libwinpthread-git=5.0.0.4634.697f757
+  - m2w64-gcc-libgfortran
+  - m2w64-gcc-libs
+  - m2w64-gcc-libs-core
+  - m2w64-gmp
+  - m2w64-libwinpthread-git
   - mamba=0.7.14
   - markupsafe=1.1.1
   - matplotlib=3.3.4
   - matplotlib-base=3.3.4
-  - menuinst=1.4.16
+  - menuinst
   - mistune=0.8.4
   - mkl=2020.4
-  - msys2-conda-epoch=20160418
+  - msys2-conda-epoch
   - multidict=5.1.0
   - munch=2.5.0
   - nbclient=0.5.3
@@ -205,8 +205,8 @@ dependencies:
   - python-mss=6.1.0
   - python_abi=3.8
   - pytz=2021.1
-  - pywin32=300
-  - pywinpty=0.5.7
+  - pywin32
+  - pywinpty
   - pyyaml=5.4.1
   - pyzmq=22.0.3
   - qt=5.12.9
@@ -242,18 +242,18 @@ dependencies:
   - typing_extensions=3.7.4.3
   - uritemplate=3.0.1
   - urllib3=1.26.3
-  - vc=14.2
+  - vc
   - voila=0.2.7
-  - vs2015_runtime=14.28.29325
+  - vs2015_runtime
   - wcwidth=0.2.5
   - webencodings=0.5.1
   - wheel=0.36.2
   - whitebox=1.4.0
   - whiteboxgui=0.1.9
   - widgetsnbextension=3.5.1
-  - win_inet_pton=1.1.0
-  - wincertstore=0.2
-  - winpty=0.4.3
+  - win_inet_pton
+  - wincertstore
+  - winpty
   - xerces-c=3.2.3
   - xorg-kbproto=1.0.7
   - xorg-libx11=1.7.0
