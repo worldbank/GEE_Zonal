@@ -11,6 +11,9 @@ Reference polygon layer (e.g. administrative divisions or vector grid). To add a
 
 # Script
 
+var ntl = ee.ImageCollection("NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG"),
+    table = ee.FeatureCollection("users/jbelanger/IOM_round11_BDG_1kmbuff");
+
 // create feature collection to calculate zonal stats 
 Map.setOptions('SATELLITE'); 
 var shown = true;
