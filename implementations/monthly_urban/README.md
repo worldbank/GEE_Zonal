@@ -18,7 +18,7 @@ downloaded and brought into STATA for further analysis.
  
 Note: If using Landsat 7, Sentinel 2 or other data, some available functions (ex: compositing) may be different.
   
-```
+```javascript
 // create feature collection to calculate zonal stats 
 Map.setOptions('SATELLITE'); 
 var shown = true;
