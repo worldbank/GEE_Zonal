@@ -7,6 +7,7 @@ Timeframe: 2020
 
 # Script
 
+```
 var ntl = ee.ImageCollection("NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG"),
     table = ee.FeatureCollection("users/jbelanger/badghis_prov_2020");
  
@@ -69,3 +70,4 @@ Export.image.toDrive({
   scale: 450,
   region: bbox
 });
+```
