@@ -4,6 +4,7 @@ GEE Javascript script to combine landsat 5 (TM), 7 (ETM+) and 8 (OLI) image coll
 
 # Script
 
+```javascript
 var imageCollection = ee.ImageCollection("LANDSAT/LT05/C01/T1_SR"),
     table = ee.FeatureCollection("users/jbelanger/IOM_round11_BDG_1kmbuff");
 
@@ -157,3 +158,4 @@ Export.image.toAsset({
   region: bbox,
 });
 */
+```
