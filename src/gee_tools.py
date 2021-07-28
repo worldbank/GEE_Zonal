@@ -90,7 +90,7 @@ class ZonalStats(object):
     '''
     Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
     :param collection_id: ID for Earth Engine dataset
-    :type collection_id: str
+    :type collection_id: str or Image Collection
     :param target_features: vector features
     :type target_features: ee.FeatureCollection (for now)
     :param statistic_type: statistic to calculate by zone
@@ -112,15 +112,18 @@ class ZonalStats(object):
     :param output_dir: Optional, google drive directory to save outputs
     :type output_dir: str (defaults to gdrive_folder)
     '''
-    def __init__(self, collection_id, target_features, statistic_type, output_name, 
+    def __init__(self, target_features, statistic_type, collection_id = None, output_name="",
                 scale = 250, min_threshold = None, water_mask = False, tile_scale = 4,
-                start_year = 1984, end_year = 2021,
-                frequency = "original", temporal_stat = None, band = None, output_dir = "gdrive_folder"):
-        self.collection_id = collection_id
-        self.collection_suffix = collection_id[collection_id.rfind("/")+1:]
-        self.ee_dataset = ee.ImageCollection(collection_id) if band is None else ee.ImageCollection(collection_id).select(band)
+                start_year = None, end_year = None, ee_dataset = None,
+                frequency = "original", temporal_stat = None, band = None, output_dir = ""):
+        self.collection_id = collection_id if collection_id else None
+        self.collection_suffix = collection_id[collection_id.rfind("/")+1:] if collection_id else None
+        if ee_dataset is None:
+            self.ee_dataset = ee.ImageCollection(collection_id) if band is None else ee.ImageCollection(collection_id).select(band)
+        else:
+            self.ee_dataset = ee_dataset
         cat = Catalog()
-        self.metadata = cat.datasets.loc[cat.datasets.id==collection_id].iloc[0]
+        self.metadata = cat.datasets.loc[cat.datasets.id==collection_id].iloc[0] if collection_id else None
         self.target_features = target_features
         self.statistic_type = statistic_type
         self.frequency = frequency
@@ -145,14 +148,18 @@ class ZonalStats(object):
             years = list(range(start, end, 1))
         return ee.List(years)
 
-    def ymList(self):
+    def ymList(self, start=None, end=None):
         '''
         Create list of year/month pairs from a given dataset
         '''
-        start = self.metadata.start_date
-        end = self.metadata.end_date
-        ym_range = pd.date_range(datetime(start.year, start.month, 1), datetime(end.year, end.month, 1), freq="MS")
-        ym_range = list(date.strftime("%Y%m") for date in ym_range)
+        if start is None and end is None:
+            start = self.metadata.start_date
+            end = self.metadata.end_date
+            ym_range = pd.date_range(datetime(start.year, start.month, 1), datetime(end.year, end.month, 1), freq="MS")
+            ym_range = list(date.strftime("%Y%m") for date in ym_range)
+        else:
+            ym_range = pd.date_range(datetime(start, 1, 1), datetime(end, 12, 31), freq="MS")
+            ym_range = list(date.strftime("%Y%m") for date in ym_range)
         return ee.List(ym_range)
     
     def ymList_ee(self):
@@ -160,8 +167,8 @@ class ZonalStats(object):
         Create list of year/month pairs from a given dataset using EE
         '''
         def iter_func(image, newlist):
-            date = ee.Number.parse(image.date().format("YYYYMM")).format();
-            newlist = ee.List(newlist);
+            date = ee.Number.parse(image.date().format("YYYYMM")).format()
+            newlist = ee.List(newlist)
             return ee.List(newlist.add(date).sort())
         ymd = self.ee_dataset.iterate(iter_func, ee.List([]))
         return ee.List(ymd).distinct()
@@ -215,49 +222,87 @@ class ZonalStats(object):
         if self.frequency not in ['monthly', 'annual', 'original']:
             raise Exception("frequency must be one of annual, monthly, or original")
         if self.frequency == "monthly":
-            timesteps = self.ymList()
-        elif self.frequency =="annual":
+            timesteps = self.ymList(self.start_year, self.end_year)
+        elif self.frequency == "annual":
             timesteps = self.yList(self.start_year, self.end_year)
-        byTimesteps = self.ee_dataset.toBands() if self.frequency=="original" else self.temporalStack(timesteps, self.frequency, self.temporal_stat)
-
+        elif self.frequency == "original":
+            if self.start_year is not None and self.end_year is not None:
+                start_year_format = datetime(self.start_year, 1, 1).strftime("%Y-%m-%d")
+                end_year_format = datetime(self.end_year, 12, 31).strftime("%Y-%m-%d")
+                self.ee_dataset = self.ee_dataset.filterDate(start_year_format, end_year_format)
+        # byTimesteps = self.ee_dataset.toBands() if self.frequency=="original" else self.temporalStack(timesteps, self.frequency, self.temporal_stat)
+        if self.frequency=="original":
+            if type(self.ee_dataset) == ee.image.Image:
+                byTimesteps = self.ee_dataset
+            elif type(self.ee_dataset) == ee.imagecollection.ImageCollection:
+                byTimesteps = self.ee_dataset.toBands()
+        else:
+            byTimesteps = self.temporalStack(timesteps, self.frequency, self.temporal_stat)
+        
         # pre-processing
         if self.water_mask == True:
             byTimesteps = self.applyWaterMask(byTimesteps)
         if self.min_threshold is not None:
-            byTimesteps = self.applyMinThreshold(byTimesteps, self.min_threshold)            
-
+            byTimesteps = self.applyMinThreshold(byTimesteps, self.min_threshold)
+        
         allowed_statistics = {
             "mean": ee.Reducer.mean(),
             "max": ee.Reducer.max(),
             "median": ee.Reducer.median(),
             "min": ee.Reducer.min(),
             "sum": ee.Reducer.sum(),
-            "stddev": ee.Reducer.stdDev(),
+            "stdDev": ee.Reducer.stdDev(),
             "var": ee.Reducer.variance(),
+            "minmax" : ee.Reducer.minMax(),
+            "p75" : ee.Reducer.percentile([75]), # maxBuckets=10 , minBucketWidth=1, maxRaw=1000
+            "p25" : ee.Reducer.percentile([25]), # maxBuckets=10 , minBucketWidth=1, maxRaw=1000
+            "p95" : ee.Reducer.percentile([95]), # maxBuckets=10 , minBucketWidth=1, maxRaw=1000
             "all" : ee.Reducer.mean() \
                 .combine(ee.Reducer.minMax(), sharedInputs=True) \
                 .combine(ee.Reducer.stdDev(), sharedInputs=True)
         }
-        if self.statistic_type not in allowed_statistics.keys():
-            raise Exception(
-                "satistic must be one of be one of {}".format(", ".join(list(allowed_statistics.keys())))
-                )
+        
+        def combine_reducers(reducer_list):
+            for i, r in enumerate(reducer_list):
+                if i==0:
+                    reducer = r
+                if i>0:
+                    reducer = reducer.combine(r, sharedInputs=True)
+            return reducer
+        
+        if type(self.statistic_type) == str:            
+            if self.statistic_type not in allowed_statistics.keys():
+                raise Exception(
+                    "satistic must be one of be one of {}".format(", ".join(list(allowed_statistics.keys())))
+                    )
+            else:
+                reducer = allowed_statistics[self.statistic_type]                
+        elif type(self.statistic_type) == list:
+            for stat_type in self.statistic_type:
+                if stat_type not in allowed_statistics.keys():
+                    raise Exception(
+                        "satistic must be one of be one of {}".format(", ".join(list(allowed_statistics.keys())))
+                        )
+            reducer_list = [allowed_statistics[stat_type] for stat_type in self.statistic_type]
+            reducer = combine_reducers(reducer_list)
+                
         zs = ee.Image(byTimesteps).reduceRegions(
             collection = self.target_features, 
-            reducer = allowed_statistics[self.statistic_type],
+            reducer = reducer,
             scale = self.scale,
             tileScale = self.tile_scale
         )
         if self.output_dir != '' and self.output_name != '':
             self.task = ee.batch.Export.table.toDrive(
                 collection = zs,
-                description = f'Zonal statistics {self.statistic_type} of {self.temporal_stat} {self.collection_suffix}',
+                description = f'Zonal statistics for {self.collection_suffix}',
                 fileFormat = 'CSV',    
                 folder = self.output_dir,
                 fileNamePrefix = self.output_name,
             )
             self.task.start()
-        return(zs)
+        else:
+            return(zs)
     
     def reportRunTime(self):
         start_time = self.task.status()['start_timestamp_ms']

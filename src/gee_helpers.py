@@ -2,6 +2,7 @@ import ee, os, re
 
 import pandas as pd
 import geopandas as gpd
+import geojson
 
 from datetime import datetime
 
