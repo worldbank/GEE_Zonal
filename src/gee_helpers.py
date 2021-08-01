@@ -5,6 +5,7 @@ import geopandas as gpd
 import geojson
 
 from datetime import datetime
+from shapely.geometry import Polygon, MultiPolygon
 
 try:
     import eemont
@@ -29,10 +30,10 @@ def gpd_to_gee(inD, id_col):
     bad_idx = []
     for idx, row in inD.iterrows():
         try:
-            shpJSON = geojson.Feature(geometry=row['geometry'], properties={"ID":row[id_col]})
-            try:
+            shpJSON = geojson.Feature(geometry=row['geometry'], properties={"id":row[id_col]})
+            if type(row['geometry']) == Polygon:
                 ee_poly = ee.Geometry.Polygon(shpJSON['geometry']['coordinates'])
-            except:
+            elif type(row['geometry']) == MultiPolygon:
                 ee_poly = ee.Geometry.MultiPolygon(shpJSON['geometry']['coordinates'])
             all_polys.append(ee_poly)
         except:
