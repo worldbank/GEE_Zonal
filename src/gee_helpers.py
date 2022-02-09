@@ -1,20 +1,14 @@
 import ee, os, re
-
 import pandas as pd
 import geopandas as gpd
 import geojson
-
 from datetime import datetime
 from shapely.geometry import Polygon, MultiPolygon
-
 try:
-    import eemont
+    from pydrive.drive import GoogleDrive
+    from pydrive.auth import GoogleAuth
 except:
-    print("eemont not available")
-try:
-    import geemap
-except:
-    print("geemap not available")
+    print("Google Drive tools are not available")
 
 pd.set_option('display.max_colwidth', None)
 
@@ -49,3 +43,8 @@ def get_zonal_res(res):
     for feat in res['features']:
         all_res.append(feat['properties'])
     return(pd.DataFrame(all_res))
+
+def authenticateGoogleDrive():
+    gauth = GoogleAuth()
+    drive = GoogleDrive(gauth)
+    return drive

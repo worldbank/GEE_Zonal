@@ -3,12 +3,9 @@ try:
     import eemont
 except:
     print("eemont not available")
-try:
-    import geemap
-except:
-    print("geemap not available")
 from datetime import datetime
 import pandas as pd
+import io
 
 pd.set_option('display.max_colwidth', None)
 repo_dir = os.path.dirname(os.path.realpath(__file__)) # if Notebooks could also access thorugh ..
@@ -110,7 +107,7 @@ class ZonalStats(object):
     :param band: Optional, specify name of image band to use
     :type band: str
     :param output_dir: Optional, google drive directory to save outputs
-    :type output_dir: str (defaults to gdrive_folder)
+    :type output_dir: str (defaults to none)
     '''
     def __init__(self, target_features, statistic_type, collection_id = None, output_name="",
                 scale = 250, min_threshold = None, water_mask = False, tile_scale = 4,
@@ -246,6 +243,7 @@ class ZonalStats(object):
             byTimesteps = self.applyMinThreshold(byTimesteps, self.min_threshold)
         
         allowed_statistics = {
+            "count": ee.Reducer.count(),
             "mean": ee.Reducer.mean(),
             "max": ee.Reducer.max(),
             "median": ee.Reducer.median(),
@@ -320,6 +318,15 @@ class ZonalStats(object):
             print(self.task.status()['error_message'])
         if self.task.status()['state'] == "READY":
             print("Status is Ready, hasn't started")
+    
+    def getZonalStats(self, drive):
+        folder = drive.ListFile({'q': f"title = '{self.output_dir}' and trashed=false and mimeType = 'application/vnd.google-apps.folder'"}).GetList()[0]
+        folder_id = folder['id']
+        export_file = drive.ListFile({'q': f"'{folder_id}' in parents and trashed=false and title contains '{self.output_name}'"}).GetList()[0]
+        s = export_file.GetContentString()
+        c = pd.read_csv(io.StringIO(s))
+        c.drop('.geo', axis=1, inplace=True)
+        return c
 
 class ZonalStats_Landsat(object):
     '''

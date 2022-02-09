@@ -91,6 +91,7 @@ target/
 # Notebook to test features
 /notebooks/Testing.ipynb
 /notebooks/tests
+/notebooks/client_secrets.json
 /src/garbage.py
 /models
 /references
