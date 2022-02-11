@@ -31,7 +31,8 @@ results = results.search_title("landsat")
 
 **ZonalStats()**
 
-Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
+Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)  
+See [Test Zonal Statistics notebook](./notebooks/Test%20Zonal%20Statistics.ipynb)
 
 ```python
 import ee
@@ -43,12 +44,13 @@ zs = ZonalStats(
   target_features = AOIs, 
   statistic_type = "mean", 
   freq = "annual",
-  output_name = "pretty_output"
+  output_name = "pretty_output",
+  temporal_stat = "mean
 )
 
 ```
 
-See notebooks and docstrings for more details on the input parameters for ZonalStats().
+See docstrings for more details on the input parameters for ZonalStats(). The output statistics can be retrieved directly in the notebook (as a ee.featureCollection / dictionary), or retrieved from Google Drive as a csv table.
 
 ## Environment Setup
 
