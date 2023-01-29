@@ -110,7 +110,7 @@ class ZonalStats(object):
     :type output_dir: str (defaults to none)
     '''
     def __init__(self, target_features, statistic_type, collection_id = None, output_name="",
-                scale = 250, min_threshold = None, water_mask = False, tile_scale = 4,
+                scale = 250, min_threshold = None, mask = None, tile_scale = 4,
                 start_year = None, end_year = None, ee_dataset = None,
                 frequency = "original", temporal_stat = None, band = None, output_dir = ""):
         self.collection_id = collection_id if collection_id else None
@@ -130,7 +130,7 @@ class ZonalStats(object):
         self.task = None
         self.scale = scale
         self.min_threshold = min_threshold
-        self.water_mask = water_mask
+        self.mask = mask
         self.tile_scale = tile_scale
         self.start_year = start_year
         self.end_year = end_year
@@ -205,7 +205,7 @@ class ZonalStats(object):
             byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_monthly))
         if freq=="annual":
             byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_annual))
-        return byTime.toBands()
+        return byTime #.toBands()
         
     def applyWaterMask(self, image, year=None):
         land_mask = ee.Image("MODIS/MOD44W/MOD44W_005_2000_02_24").select('water_mask').eq(0)
@@ -214,6 +214,9 @@ class ZonalStats(object):
     def applyMinThreshold(self, image, min_threshold):
         bool_mask = image.gte(min_threshold)
         return image.updateMask(bool_mask)
+        
+    def applyMask(self, image, mask):
+        return image.updateMask(mask)
     
     def runZonalStats(self):
         if self.frequency not in ['monthly', 'annual', 'original']:
@@ -235,10 +238,14 @@ class ZonalStats(object):
                 byTimesteps = self.ee_dataset.toBands()
         else:
             byTimesteps = self.temporalStack(timesteps, self.frequency, self.temporal_stat)
+            byTimesteps = byTimesteps.toBands()
         
         # pre-processing
-        if self.water_mask == True:
-            byTimesteps = self.applyWaterMask(byTimesteps)
+        if self.mask is not None:
+            if self.mask == "water":
+                byTimesteps = self.applyWaterMask(byTimesteps)
+            elif type(self.mask) == ee.image.Image:
+                byTimesteps = self.applyMask(self.mask)
         if self.min_threshold is not None:
             byTimesteps = self.applyMinThreshold(byTimesteps, self.min_threshold)
         

@@ -39,10 +39,16 @@ def gpd_to_gee(inD, id_col):
 def get_zonal_res(res):
     ''' create a data frame from the results of GEE zonal results (res.getInfo())
     '''
-    all_res = []
-    for feat in res['features']:
-        all_res.append(feat['properties'])
-    return(pd.DataFrame(all_res))
+    feats = res['features']
+    cols = [list(f['properties'].keys()) for f in feats][0]
+    ids = [f['id'] for f in feats]
+    values = [list(f['properties'].values()) for f in feats]
+    df = pd.DataFrame(index=ids, columns=cols, data=values)
+    return df
+    # all_res = []
+    # for feat in res['features']:
+    #     all_res.append(feat['properties'])
+    # return(pd.DataFrame(all_res))
 
 def authenticateGoogleDrive():
     gauth = GoogleAuth()
