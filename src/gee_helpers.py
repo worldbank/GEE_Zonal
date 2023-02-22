@@ -36,19 +36,18 @@ def gpd_to_gee(inD, id_col):
     cur_ee = ee.featurecollection.FeatureCollection(all_polys)
     return(cur_ee)
 
-def get_zonal_res(res):
-    ''' create a data frame from the results of GEE zonal results (res.getInfo())
+def get_zonal_res(res, rename=None):
+    ''' create a data frame from the results of GEE zonal results
+    :param res: response from Earth Engine reduce regions method: response.getInfo()
+    :type get_zonal_res: dictionary from ee.FeatureCollection
     '''
     feats = res['features']
-    cols = [list(f['properties'].keys()) for f in feats][0]
     ids = [f['id'] for f in feats]
-    values = [list(f['properties'].values()) for f in feats]
-    df = pd.DataFrame(index=ids, columns=cols, data=values)
+    series = [pd.Series(f['properties']) for f in feats]
+    df = pd.DataFrame(data=series, index=ids)
+    if rename:
+        df.rename(columns=rename, inplace=True)
     return df
-    # all_res = []
-    # for feat in res['features']:
-    #     all_res.append(feat['properties'])
-    # return(pd.DataFrame(all_res))
 
 def authenticateGoogleDrive():
     gauth = GoogleAuth()
