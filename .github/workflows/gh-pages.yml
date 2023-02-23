@@ -21,6 +21,7 @@ jobs:
           conda install pip
           if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
       - name: Sphinx build
+        shell: bash -l {0}
         run: |
           sphinx-build source _build
       - name: Deploy
