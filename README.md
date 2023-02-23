@@ -31,7 +31,7 @@ results = results.search_title("landsat")
 
 **ZonalStats()**
 
-Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)  
+Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
 See [Test Zonal Statistics notebook](./notebooks/Test%20Zonal%20Statistics.ipynb)
 
 ```python
@@ -41,8 +41,8 @@ ee.Initialize()
 AOIs = ee.FeatureCollection('<id of ee.FeatureCollection>')
 zs = ZonalStats(
   collection_id = 'LANDSAT/LC08/C01/T1_8DAY_NDVI',
-  target_features = AOIs, 
-  statistic_type = "mean", 
+  target_features = AOIs,
+  statistic_type = "mean",
   freq = "annual",
   output_name = "pretty_output",
   temporal_stat = "mean
@@ -82,16 +82,6 @@ earthengine authenticate
 - [ ] Add capability to interact with shapefiles/geopandas like geemap
 - [ ] Improve documentation / environment setup
 
-## Resources
+## License
 
-- [The DIME Wiki](https://dimewiki.worldbank.org/wiki/Main_Page)
-    > The DIME Wiki is a public good developed and maintained by DIME Analytics, a team which creates tools that improve the quality of impact evaluation research at DIME. The DIME Wiki is targeted to all researchers and M&E specialists at the World Bank, clients who are managing data collection efforts in the field, donor institutions, universities, NGOs, and governments. While there are many existing impact evaluation resources, none meet the specific gap the DIME Wiki aims to fulfill: a resource focused on practical implementation guidelines rather than theory, open to the public, easily searchable, suitable for users of varying levels of expertise, up-to-date with the latest technological advances in electronic data collection, with a vibrant network of editors who are experts in this field.
-
-- [The DIME Analytics Data Handbook](https://worldbank.github.io/dime-data-handbook/)
-    > This book is intended to serve as an introduction to the primary tasks required in development research, from experimental design to data collection to data analysis to publication. It serves as a companion to the DIME Wiki and is produced by DIME Analytics.
-
-- [GitHub Pages](https://guides.github.com/features/pages/)
-    > GitHub Pages are public webpages hosted and easily published through GitHub. 
-
-- [Jupyter Book](https://jupyterbook.org/intro.html)
-    > Jupyter Book is an open source project for building beautiful, publication-quality books and documents from computational material.
+[**World Bank Master Community License Agreement**](LICENSE.md).
