@@ -1,7 +1,7 @@
-API
+Summary
 ===
 
 .. autosummary::
    :toctree: generated
 
-   lumache
+   gee_tools

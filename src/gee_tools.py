@@ -1,8 +1,12 @@
+"""
+ZonalStats - Python library with GEE Tools.
+"""
+
 import ee, os, re
 from datetime import datetime
 import pandas as pd
 import io
-
+ee.Initialize()
 repo_dir = os.path.dirname(os.path.realpath(__file__)) # if Notebooks could also access thorugh ..
 
 class Catalog(object):
@@ -83,42 +87,59 @@ class Catalog(object):
             raise Exception("No hits!")
         
 class ZonalStats(object):
-    '''
-    Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
-    :param collection_id: ID for Earth Engine dataset
-    :type collection_id: str or Image Collection
+    """
+    Python class to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollection or ee.Image) over vector shapes (ee.FeatureCollections).
+    
     :param target_features: vector features
-    :type target_features: ee.FeatureCollection (for now)
-    :param statistic_type: statistic to calculate by zone
-    :type statistic_type: str (one of mean, max, median, min, sum, stddev, var)
-    :param output_name: file name for output statistics
+    :type target_features: ee.FeatureCollection
+    :param statistic_type: method to aggregate image pixels by zone
+    :type statistic_type: str - mean, max, median, min, sum, stddev, var, count, minmax, p75, p25, p95, all
+    :param collection_id: ID for Earth Engine dataset
+    :type collection_id: str
+    :param ee_dataset: input dataset if no collection ID is provided, defaults to None
+    :type ee_dataset: ee.Image or ee.ImageCollection(, optional)
+    :param band: name of image band to use
+    :type band: str(, optional)
+    :param output_name: file name for output statistics if saved to Google Drive, defaults to None
     :type output_name: str
-    :param scale: scale for calculation
+    :param output_dir: directory name for output statistics if saved to Google Drive, defaults to None
+    :type output_dir: str(, optional)
+    :param frequency: temporal frequency for aggregation, defaults to original frequency
+    :type frequency: str (monthly, annual, or original)(, optional)
+    :param temporal_stat: statistic for temporal aggregation, defaults to None.
+    :type temporal_stat: str (mean, max, median, min, sum)(, optional)
+    :param scale: scale for calculation in mts
     :type scale: int
-    :param min_threshold: filter out values lower than min_threshold
+    :param min_threshold: filter out values lower than treshold
     :type min_threshold: int
-    :param water_mask: filter out water
-    :type water_mask: boolean
-    :param frequency: Optional, temporal frequency for aggregation
-    :type frequency: str (monthly, annual, or original) defaults to original (raw temporal frequency of the dataset).
-    :param temporal_stat: Optional, statistic for temporal aggregation
-    :type temporal_stat: str (mean, max, median, min, or sum, defaults to None)
-    :param band: Optional, specify name of image band to use
-    :type band: str
-    :param output_dir: Optional, google drive directory to save outputs
-    :type output_dir: str (defaults to none)
-    '''
-    def __init__(self, target_features, statistic_type, collection_id = None, output_name="",
-                scale = 250, min_threshold = None, mask = None, tile_scale = 1, collection_is_image = False,
-                start_year = None, end_year = None, ee_dataset = None, scale_factor = None,
-                frequency = "original", temporal_stat = None, band = None, output_dir = ""):
+    :param mask: filter out observations where mask is zero
+    :type mask: ee.Image
+    :param tile_scale: tile scale factor for parallel processing, defaults to 1
+    :type tile_scale: int
+    :param start_year: specify start year for stats, defaults to None
+    :type start_year: int
+    :param end_year: specify end year for stats (not inclusive), defaults to None
+    :type end_year: int
+    :param scale_factor: scale factor to multiply ee.Image to get correct units, defaults to None
+    :type scale_factor: int
+    """
+    def __init__(self, target_features, statistic_type, collection_id, ee_dataset = None, band = None,
+                output_name = None, output_dir = None,
+                frequency = "original", temporal_stat = None,
+                scale = 250, min_threshold = None, mask = None, tile_scale = 1,
+                start_year = None, end_year = None, scale_factor = None):
         self.collection_id = collection_id if collection_id else None
         self.collection_suffix = collection_id[collection_id.rfind("/")+1:] if collection_id else None
         if ee_dataset is None:
-            if collection_is_image == True:
-                self.ee_dataset = ee.Image(collection_id) if band is None else ee.Image(collection_id).select(band)
-            else:
+            try:
+                ee.ImageCollection(collection_id).getInfo()
                 self.ee_dataset = ee.ImageCollection(collection_id) if band is None else ee.ImageCollection(collection_id).select(band)
+            except:
+                try:
+                    ee.Image(collection_id).getInfo()
+                    self.ee_dataset = ee.Image(collection_id) if band is None else ee.Image(collection_id).select(band)
+                except:
+                    raise Exception('Collection ID does not exist')
         else:
             self.ee_dataset = ee_dataset
         cat = Catalog()
@@ -305,7 +326,7 @@ class ZonalStats(object):
             scale = self.scale,
             tileScale = self.tile_scale
         )
-        if self.output_dir != '' and self.output_name != '':
+        if self.output_dir is not None and self.output_name is not None:
             self.task = ee.batch.Export.table.toDrive(
                 collection = zs,
                 description = f'Zonal statistics for {self.collection_suffix}',
@@ -315,8 +336,23 @@ class ZonalStats(object):
             )
             self.task.start()
         else:
-            return(zs)
+            res = zs.getInfo()
+            return(self.get_zonal_res(res))
     
+    def get_zonal_res(self, res, rename=None):
+        ''' 
+        Create a data frame from the results of GEE zonal
+        :param res: response from RunZonalStats method retrieved via featureCollection.getInfo()
+        :type res: dictionary from ee.FeatureCollection
+        '''
+        feats = res['features']
+        ids = [f['id'] for f in feats]
+        series = [pd.Series(f['properties']) for f in feats]
+        df = pd.DataFrame(data=series, index=ids)
+        if rename:
+            df.rename(columns=rename, inplace=True)
+        return df
+
     def reportRunTime(self):
         start_time = self.task.status()['start_timestamp_ms']
         update_time = self.task.status()['update_timestamp_ms']

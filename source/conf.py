@@ -1,10 +1,18 @@
 # Configuration file for the Sphinx documentation builder.
+import sys, os
+sys.path.append(os.path.abspath('../src'))
+
+# mock import these packages because readthedocs doesn't have them installed
+autodoc_mock_imports = [
+  'ee',
+  'pandas'
+]
 
 # -- Project information
 
-project = 'Lumache'
-copyright = '2021, Graziella'
-author = 'Graziella'
+project = 'GEE Zonal'
+copyright = '2021, World Bank'
+author = 'Andres Chamorro'
 
 release = '0.1'
 version = '0.1.0'
