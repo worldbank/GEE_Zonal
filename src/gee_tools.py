@@ -1,13 +1,12 @@
+"""
+ZonalStats - Python library with GEE Tools.
+"""
+
 import ee, os, re
-try:
-    import eemont
-except:
-    print("eemont not available")
 from datetime import datetime
 import pandas as pd
 import io
-
-pd.set_option('display.max_colwidth', None)
+ee.Initialize()
 repo_dir = os.path.dirname(os.path.realpath(__file__)) # if Notebooks could also access thorugh ..
 
 class Catalog(object):
@@ -19,10 +18,14 @@ class Catalog(object):
     def __init__(self, datasets = None, redownload = False):
         def load_datasets():
             if redownload == True:
-                datasets = pd.read_json("https://raw.githubusercontent.com/samapriya/Earth-Engine-Datasets-List/master/gee_catalog.json")
+                datasets = pd.read_csv("https://raw.githubusercontent.com/samapriya/Earth-Engine-Datasets-List/master/gee_catalog.csv")
                 datasets = datasets[['id', 'provider', 'title', 'start_date', 'end_date', 'startyear', 'endyear', 'type', 'tags', 'asset_url', 'thumbnail_url']]
                 datasets.to_csv(os.path.join(repo_dir, "Earth-Engine-Datasets-List/eed_latest.csv"), index=False)
-            datasets = pd.read_csv(os.path.join(repo_dir, "Earth-Engine-Datasets-List/eed_latest.csv"))
+            else:
+                try:
+                    datasets = pd.read_csv("https://raw.githubusercontent.com/samapriya/Earth-Engine-Datasets-List/master/gee_catalog.csv")
+                except:
+                    datasets = pd.read_csv(os.path.join(repo_dir, "Earth-Engine-Datasets-List/eed_latest.csv"))
             datasets['tags'] = datasets.tags.apply(lambda x: x.lower())
             datasets['tags'] = datasets.tags.apply(lambda x: x.split(', '))
             datasets['start_date'] = pd.to_datetime(datasets.start_date)
@@ -84,39 +87,59 @@ class Catalog(object):
             raise Exception("No hits!")
         
 class ZonalStats(object):
-    '''
-    Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
-    :param collection_id: ID for Earth Engine dataset
-    :type collection_id: str or Image Collection
+    """
+    Python class to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollection or ee.Image) over vector shapes (ee.FeatureCollections).
+    
     :param target_features: vector features
-    :type target_features: ee.FeatureCollection (for now)
-    :param statistic_type: statistic to calculate by zone
-    :type statistic_type: str (one of mean, max, median, min, sum, stddev, var)
-    :param output_name: file name for output statistics
+    :type target_features: ee.FeatureCollection
+    :param statistic_type: method to aggregate image pixels by zone
+    :type statistic_type: str - mean, max, median, min, sum, stddev, var, count, minmax, p75, p25, p95, all
+    :param collection_id: ID for Earth Engine dataset
+    :type collection_id: str
+    :param ee_dataset: input dataset if no collection ID is provided, defaults to None
+    :type ee_dataset: ee.Image or ee.ImageCollection(, optional)
+    :param band: name of image band to use
+    :type band: str(, optional)
+    :param output_name: file name for output statistics if saved to Google Drive, defaults to None
     :type output_name: str
-    :param scale: scale for calculation
+    :param output_dir: directory name for output statistics if saved to Google Drive, defaults to None
+    :type output_dir: str(, optional)
+    :param frequency: temporal frequency for aggregation, defaults to original frequency
+    :type frequency: str (monthly, annual, or original)(, optional)
+    :param temporal_stat: statistic for temporal aggregation, defaults to None.
+    :type temporal_stat: str (mean, max, median, min, sum)(, optional)
+    :param scale: scale for calculation in mts
     :type scale: int
-    :param min_threshold: filter out values lower than min_threshold
+    :param min_threshold: filter out values lower than treshold
     :type min_threshold: int
-    :param water_mask: filter out water
-    :type water_mask: boolean
-    :param frequency: Optional, temporal frequency for aggregation
-    :type frequency: str (monthly, annual, or original) defaults to original (raw temporal frequency of the dataset).
-    :param temporal_stat: Optional, statistic for temporal aggregation
-    :type temporal_stat: str (mean, max, median, min, or sum, defaults to None)
-    :param band: Optional, specify name of image band to use
-    :type band: str
-    :param output_dir: Optional, google drive directory to save outputs
-    :type output_dir: str (defaults to none)
-    '''
-    def __init__(self, target_features, statistic_type, collection_id = None, output_name="",
-                scale = 250, min_threshold = None, water_mask = False, tile_scale = 4,
-                start_year = None, end_year = None, ee_dataset = None,
-                frequency = "original", temporal_stat = None, band = None, output_dir = ""):
+    :param mask: filter out observations where mask is zero
+    :type mask: ee.Image
+    :param tile_scale: tile scale factor for parallel processing, defaults to 1
+    :type tile_scale: int
+    :param start_year: specify start year for stats, defaults to None
+    :type start_year: int
+    :param end_year: specify end year for stats (not inclusive), defaults to None
+    :type end_year: int
+    :param scale_factor: scale factor to multiply ee.Image to get correct units, defaults to None
+    :type scale_factor: int
+    """
+    def __init__(self, target_features, statistic_type, collection_id, ee_dataset = None, band = None,
+                output_name = None, output_dir = None,
+                frequency = "original", temporal_stat = None,
+                scale = 250, min_threshold = None, mask = None, tile_scale = 1,
+                start_year = None, end_year = None, scale_factor = None):
         self.collection_id = collection_id if collection_id else None
         self.collection_suffix = collection_id[collection_id.rfind("/")+1:] if collection_id else None
         if ee_dataset is None:
-            self.ee_dataset = ee.ImageCollection(collection_id) if band is None else ee.ImageCollection(collection_id).select(band)
+            try:
+                ee.ImageCollection(collection_id).getInfo()
+                self.ee_dataset = ee.ImageCollection(collection_id) if band is None else ee.ImageCollection(collection_id).select(band)
+            except:
+                try:
+                    ee.Image(collection_id).getInfo()
+                    self.ee_dataset = ee.Image(collection_id) if band is None else ee.Image(collection_id).select(band)
+                except:
+                    raise Exception('Collection ID does not exist')
         else:
             self.ee_dataset = ee_dataset
         cat = Catalog()
@@ -130,7 +153,8 @@ class ZonalStats(object):
         self.task = None
         self.scale = scale
         self.min_threshold = min_threshold
-        self.water_mask = water_mask
+        self.mask = mask
+        self.scale_factor = scale_factor
         self.tile_scale = tile_scale
         self.start_year = start_year
         self.end_year = end_year
@@ -205,7 +229,7 @@ class ZonalStats(object):
             byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_monthly))
         if freq=="annual":
             byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_annual))
-        return byTime.toBands()
+        return byTime #.toBands()
         
     def applyWaterMask(self, image, year=None):
         land_mask = ee.Image("MODIS/MOD44W/MOD44W_005_2000_02_24").select('water_mask').eq(0)
@@ -214,6 +238,12 @@ class ZonalStats(object):
     def applyMinThreshold(self, image, min_threshold):
         bool_mask = image.gte(min_threshold)
         return image.updateMask(bool_mask)
+        
+    def applyMask(self, image, mask):
+        return image.updateMask(mask)
+
+    def applyScaleFactor(self, image, scale_factor):
+        return image.multiply(scale_factor)
     
     def runZonalStats(self):
         if self.frequency not in ['monthly', 'annual', 'original']:
@@ -235,21 +265,27 @@ class ZonalStats(object):
                 byTimesteps = self.ee_dataset.toBands()
         else:
             byTimesteps = self.temporalStack(timesteps, self.frequency, self.temporal_stat)
+            byTimesteps = byTimesteps.toBands()
         
         # pre-processing
-        if self.water_mask == True:
-            byTimesteps = self.applyWaterMask(byTimesteps)
+        if self.mask is not None:
+            if self.mask == "water":
+                byTimesteps = self.applyWaterMask(byTimesteps)
+            elif type(self.mask) == ee.image.Image:
+                byTimesteps = self.applyMask(byTimesteps, self.mask)
         if self.min_threshold is not None:
             byTimesteps = self.applyMinThreshold(byTimesteps, self.min_threshold)
+        if self.scale_factor is not None:
+            byTimesteps = self.applyScaleFactor(byTimesteps, self.scale_factor)
         
         allowed_statistics = {
-            "count": ee.Reducer.count(),
+            "count": ee.Reducer.frequencyHistogram().unweighted(),
             "mean": ee.Reducer.mean(),
             "max": ee.Reducer.max(),
             "median": ee.Reducer.median(),
             "min": ee.Reducer.min(),
             "sum": ee.Reducer.sum(),
-            "stdDev": ee.Reducer.stdDev(),
+            "stddev": ee.Reducer.stdDev(),
             "var": ee.Reducer.variance(),
             "minmax" : ee.Reducer.minMax(),
             "p75" : ee.Reducer.percentile([75]), # maxBuckets=10 , minBucketWidth=1, maxRaw=1000
@@ -290,7 +326,7 @@ class ZonalStats(object):
             scale = self.scale,
             tileScale = self.tile_scale
         )
-        if self.output_dir != '' and self.output_name != '':
+        if self.output_dir is not None and self.output_name is not None:
             self.task = ee.batch.Export.table.toDrive(
                 collection = zs,
                 description = f'Zonal statistics for {self.collection_suffix}',
@@ -300,8 +336,23 @@ class ZonalStats(object):
             )
             self.task.start()
         else:
-            return(zs)
+            res = zs.getInfo()
+            return(self.get_zonal_res(res))
     
+    def get_zonal_res(self, res, rename=None):
+        ''' 
+        Create a data frame from the results of GEE zonal
+        :param res: response from RunZonalStats method retrieved via featureCollection.getInfo()
+        :type res: dictionary from ee.FeatureCollection
+        '''
+        feats = res['features']
+        ids = [f['id'] for f in feats]
+        series = [pd.Series(f['properties']) for f in feats]
+        df = pd.DataFrame(data=series, index=ids)
+        if rename:
+            df.rename(columns=rename, inplace=True)
+        return df
+
     def reportRunTime(self):
         start_time = self.task.status()['start_timestamp_ms']
         update_time = self.task.status()['update_timestamp_ms']
@@ -327,506 +378,3 @@ class ZonalStats(object):
         c = pd.read_csv(io.StringIO(s))
         c.drop('.geo', axis=1, inplace=True)
         return c
-
-class ZonalStats_Landsat(object):
-    '''
-    Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
-    :param index: Which index to calculate (NDVI, EVI, NDSI, NDWI)
-    :type index: str
-    :param target_features: vector features
-    :type target_features: ee.FeatureCollection (for now)
-    :param statistic_type: statistic to calculate by zone
-    :type statistic_type: str (one of mean, max, median, min, sum, stddev, var)
-    :param output_name: file name for output statistics
-    :type output_name: str
-    :param scale: scale for calculation
-    :type scale: int
-    :param min_threshold: filter out values lower than min_threshold
-    :type min_threshold: int
-    :param water_mask: filter out water
-    :type water_mask: boolean
-    :param frequency: Optional, temporal frequency for aggregation
-    :type frequency: str (monthly, annual, or original) defaults to original (raw temporal frequency of the dataset).
-    :param temporal_stat: Optional, statistic for temporal aggregation
-    :type temporal_stat: str (mean, max, median, min, or sum, defaults to None)
-    :param output_dir: Optional, google drive directory to save outputs
-    :type output_dir: str (defaults to gdrive_folder)
-    '''
-    def __init__(self, index, target_features, statistic_type, output_name,
-                scale = 250, min_threshold = None, water_mask = False, tile_scale = 4,
-                frequency = "original", temporal_stat = None, output_dir = "gdrive_folder",
-                start_year = 1984, end_year = 2021):
-        self.index = index
-        cat = Catalog()
-        self.target_features = target_features
-        self.statistic_type = statistic_type
-        self.frequency = frequency
-        self.temporal_stat = temporal_stat
-        self.output_dir = output_dir
-        self.output_name = output_name
-        self.task = None
-        self.scale = scale
-        self.min_threshold = min_threshold
-        self.water_mask = water_mask
-        self.tile_scale = tile_scale
-        self.start_year = start_year
-        self.end_year = end_year
-
-    def yList(self, start=None, end=None):
-        '''
-        Create list of years from a given dataset
-        '''
-        if start is None:
-            years = list(range(self.metadata.startyear, self.metadata.endyear+1, 1))
-        else:
-            years = list(range(start, end, 1))
-        return ee.List(years)
-    
-    def ymList(self, start=None, end=None):
-        '''
-        Create list of year/month pairs from a given dataset
-        '''
-        if start is None:
-            start = self.metadata.start_date
-            end = self.metadata.end_date
-        else:
-            start = datetime(start, 1, 1)
-            end = datetime(end, 1, 1)
-        ym_range = pd.date_range(datetime(start.year, start.month, 1), datetime(end.year, end.month, 1), freq="MS")
-        ym_range = list(date.strftime("%Y%m") for date in ym_range)
-        return ee.List(ym_range)
-        
-    def temporalStack(self, ee_dataset, date_list, freq, stat):
-        allowed_statistics_ts = {
-            "mean": ee.Reducer.mean(),
-            "max": ee.Reducer.max(),
-            "median": ee.Reducer.median(),
-            "min": ee.Reducer.min(),
-            "sum": ee.Reducer.sum(),
-            "stddev": ee.Reducer.stdDev(),
-        }
-        if stat not in allowed_statistics_ts.keys():
-            raise Exception(
-                "satistic must be one of be one of {}".format(", ".join(list(allowed_statistics_ts.keys())))
-                )
-        def aggregate_monthly(ym):
-            date = ee.Date.parse("YYYYMM", ym)
-            y = date.get('year')
-            m = date.get('month')
-            monthly = ee_dataset.filter(ee.Filter.calendarRange(y, y, 'year')) \
-                .filter(ee.Filter.calendarRange(m, m, 'month')) \
-                .reduce(allowed_statistics_ts[stat]) \
-                .set('month', m) \
-                .set('year', y) \
-                .set('system:index', ee.String(y.format().cat('_').cat(m.format())))
-            return monthly
-        def aggregate_annual(y):
-            y = ee.Number(y)
-            annual = ee_dataset.filter(ee.Filter.calendarRange(y, y, 'year')) \
-                .reduce(allowed_statistics_ts[stat]) \
-                .set('year', y) \
-                .set('system:index', ee.String(y.format()))            
-            return annual
-        if freq=="monthly":
-            byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_monthly))
-        if freq=="annual":
-            byTime = ee.ImageCollection.fromImages(date_list.map(aggregate_annual))
-        return byTime.toBands()
-    
-    def applyWaterMask(self, image, year=None):
-        land_mask = ee.Image("MODIS/MOD44W/MOD44W_005_2000_02_24").select('water_mask').eq(0)
-        return image.updateMask(land_mask)
-    
-    def applyMinThreshold(self, image, min_threshold):
-        bool_mask = image.gte(min_threshold)
-        return image.updateMask(bool_mask)
-    
-    def runZonalStats(self):
-        
-        spectralIndices = eemont.indices()
-        
-        # Define function to get and rename bands of interest from OLI.
-        def renameOLI(img):
-            return img.select(
-                ['B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'pixel_qa']
-          )
-        # Define function to get and rename bands of interest from ETM+.
-        def renameETM(img):
-            return img.select(
-                ['B1', 'B2', 'B3', 'B4', 'B5', 'B7', 'pixel_qa'],
-                ['B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'pixel_qa']
-          )
-         # Define function to apply harmonization transformation.
-        def etm2oli(img):
-            coefficients = {
-              'itcps': ee.Image.constant([0.0003, 0.0088, 0.0061, 0.0412, 0.0254, 0.0172]).multiply(10000),
-              'slopes': ee.Image.constant([0.8474, 0.8483, 0.9047, 0.8462, 0.8937, 0.9071])
-            }
-            return img.select(['B2', 'B3', 'B4', 'B5', 'B6', 'B7']) \
-                .multiply(coefficients['slopes']) \
-                .add(coefficients['itcps']) \
-                .round() \
-                .toShort() \
-                .addBands(img.select('pixel_qa'))
-        # Define function to mask out clouds and cloud shadows.
-        def fmask(img):
-            cloudShadowBitMask = 1 << 3
-            cloudsBitMask = 1 << 5
-            qa = img.select('pixel_qa')
-            mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0) \
-                .And(qa.bitwiseAnd(cloudsBitMask).eq(0))
-            return img.updateMask(mask)
-        def fmask_457(args):
-            qa = args.select('pixel_qa')
-            cloud = qa.bitwiseAnd(1 << 5).And(qa.bitwiseAnd(1 << 7))
-            cloud = cloud.Or(qa.bitwiseAnd(1 << 3))
-            mask2 = args.mask().reduce(ee.Reducer.min());
-            return args.updateMask(cloud.Not()).updateMask(mask2)
-        # Define function to prepare OLI images.
-        def prepOLI(img):
-            orig = img
-            img = renameOLI(img)
-            img = fmask(img)
-            img = scale_landsat(img)
-            return ee.Image(img.copyProperties(orig, orig.propertyNames()))
-        # Define function to prepare ETM+ images.
-        def prepETM(img):
-            orig = img
-            img = renameETM(img)
-            img = fmask_457(img)
-            img = etm2oli(img)
-            img = scale_landsat(img)
-            return ee.Image(img.copyProperties(orig, orig.propertyNames()))
-        def scale_landsat(img):
-            scaled = img.select(['B[2-7]']).divide(1e4)
-            scaled = scaled.addBands(img.select(['pixel_qa']))
-            return ee.Image(scaled.copyProperties(img,img.propertyNames()))
-        def lookupL8(img):
-            return {
-                'A': img.select('B1'),
-                'B': img.select('B2'),
-                'G': img.select('B3'),
-                'R': img.select('B4'),
-                'N': img.select('B5'),
-                'S1': img.select('B6'),
-                'S2': img.select('B7'),                
-                'T1' : img.select('B10'),
-                'T2': img.select('B11')
-            }
-        additionalParameters = {
-            'g': float(2.5),
-            'C1': float(6.0),
-            'C2': float(7.5),
-            'L': float(1.0),
-            'p': float(2.0),
-            'c': float(1.0)
-        }
-        def _index(self,index):
-            for idx in index:
-                def temporalIndex(img):
-                    lookupDic = lookupL8(img)
-                    lookupDic = {**lookupDic, **additionalParameters}
-                    return img.addBands(img.expression(spectralIndices[idx]['formula'],lookupDic).rename(idx))
-                self = self.map(temporalIndex)
-            return self
-        
-        def getStats(feature):
-            
-            oliCol = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR').filterBounds(feature.geometry()).map(prepOLI)
-            etmCol = ee.ImageCollection('LANDSAT/LE07/C01/T1_SR').filterBounds(feature.geometry()).map(prepETM)
-            tmCol = ee.ImageCollection('LANDSAT/LT05/C01/T1_SR').filterBounds(feature.geometry()).map(prepETM)
-            col = oliCol \
-                .merge(etmCol) \
-                .merge(tmCol)
-                # .index(self.index) \
-                # .select(self.index)
-            col_index = _index(col, self.index).select(self.index)
-            
-            if self.frequency not in ['monthly', 'annual', 'original']:
-                raise Exception("frequency must be one of annual, monthly, or original")
-            if self.frequency == "monthly":
-                timesteps = self.ymList(self.start_year, self.end_year)
-            elif self.frequency =="annual":
-                timesteps = self.yList(self.start_year, self.end_year)
-            byTimesteps = col_index.toBands() if self.frequency=="original" else self.temporalStack(col_index, timesteps, self.frequency, self.temporal_stat)
-            
-            # pre-processing
-            if self.water_mask == True:
-                byTimesteps = self.applyWaterMask(byTimesteps)
-            if self.min_threshold is not None:
-                byTimesteps = self.applyMinThreshold(byTimesteps, self.min_threshold)
-                
-            allowed_statistics = {
-                "mean": ee.Reducer.mean(),
-                "max": ee.Reducer.max(),
-                "median": ee.Reducer.median(),
-                "min": ee.Reducer.min(),
-                "sum": ee.Reducer.sum(),
-                "stddev": ee.Reducer.stdDev(),
-                "var": ee.Reducer.variance(),
-                "all" : ee.Reducer.mean() \
-                    .combine(ee.Reducer.minMax(), sharedInputs=True) \
-                    .combine(ee.Reducer.stdDev(), sharedInputs=True)
-            }
-            if self.statistic_type not in allowed_statistics.keys():
-                raise Exception(
-                    "satistic must be one of be one of {}".format(", ".join(list(allowed_statistics.keys())))
-                    )
-            zs = ee.Image(byTimesteps).reduceRegion(
-                geometry = feature.geometry(),
-                reducer = allowed_statistics['all'],
-                scale = self.scale,
-                tileScale = self.tile_scale,
-                bestEffort = True,
-                maxPixels = 10e15
-            )
-            return feature.setMulti(zs)
-        
-        # res = self.target_features.map(getStats)
-        # countries = pd.read_csv(os.path.join(repo_dir, "countries.csv"))
-        # features = []
-        # for country_code in countries.wb_adm0_co.to_list():
-        #     features.append(getStats(self.target_features.filterMetadata('WB_ADM0_CO', 'equals', country_code)))
-        # res = ee.FeatureCollection(features)
-        res = ee.FeatureCollection(ee.Feature(getStats(self.target_features)))
-        # res2 = ee.Feature(res)
-        # res3 = ee.FeatureCollection(res2)
-        # res = ee.FeatureCollection(res)
-        
-        self.task = ee.batch.Export.table.toDrive(
-            collection = res,
-            description = f'Zonal statistics {self.statistic_type} of {self.temporal_stat} Landsat Harmonized',
-            fileFormat = 'CSV',    
-            folder = self.output_dir,
-            fileNamePrefix = self.output_name,
-        )
-        self.task.start()
-    
-    def reportRunTime(self):
-        start_time = self.task.status()['start_timestamp_ms']
-        update_time = self.task.status()['update_timestamp_ms']
-        if self.task.status()['state'] == "RUNNING":
-            delta = datetime.now() - datetime.fromtimestamp(start_time/1000)
-            print("Still running")
-            print(f"Runtime: {delta.seconds//60} minutes and {delta.seconds % 60} seconds")
-        if self.task.status()['state'] == "COMPLETED":
-            delta = datetime.fromtimestamp(update_time/1000) - datetime.fromtimestamp(start_time/1000)
-            print("Completed")
-            print(f"Runtime: {delta.seconds//60} minutes and {delta.seconds % 60} seconds")
-        if self.task.status()['state'] == "FAILED":
-            print("Failed!")
-            print(self.task.status()['error_message'])
-        if self.task.status()['state'] == "READY":
-            print("Status is Ready, hasn't started")
-
-class ZonalStats_Tsinghua(object):
-    '''
-    Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
-    :param index: Which index to calculate (NDVI, EVI, NDSI, NDWI)
-    :type index: str
-    :param target_features: vector features
-    :type target_features: ee.FeatureCollection (for now)
-    :param statistic_type: statistic to calculate by zone
-    :type statistic_type: str (one of mean, max, median, min, sum, stddev, var)
-    :param output_name: file name for output statistics
-    :type output_name: str
-    :param scale: scale for calculation
-    :type scale: int
-    :param min_threshold: filter out values lower than min_threshold
-    :type min_threshold: int
-    :param water_mask: filter out water
-    :type water_mask: boolean
-    :param frequency: Optional, temporal frequency for aggregation
-    :type frequency: str (monthly, annual, or original) defaults to original (raw temporal frequency of the dataset).
-    :param temporal_stat: Optional, statistic for temporal aggregation
-    :type temporal_stat: str (mean, max, median, min, or sum, defaults to None)
-    :param output_dir: Optional, google drive directory to save outputs
-    :type output_dir: str (defaults to gdrive_folder)
-    '''
-    def __init__(self, target_features, output_name,
-                scale = 250, tile_scale = 4, output_dir = "gdrive_folder",
-                start_year = 1985, end_year = 2018):
-        cat = Catalog()
-        self.target_features = target_features
-        self.output_dir = output_dir
-        self.output_name = output_name
-        self.task = None
-        self.scale = scale
-        self.tile_scale = tile_scale
-        self.start_year = start_year
-        self.end_year = end_year
-        
-    def runZonalStats(self):
-        dataset = ee.Image("Tsinghua/FROM-GLC/GAIA/v10").select('change_year_index')
-        
-        years = list(range(1985, 2019, 1))
-        values = list(range(1, 35, 1))
-        values.sort(reverse=True)
-        year_dict = {}
-        for year, value in zip(years, values):
-            year_dict[year] = value
-        
-        allowed_statistics = {
-            "mean": ee.Reducer.mean(),
-            "max": ee.Reducer.max(),
-            "median": ee.Reducer.median(),
-            "min": ee.Reducer.min(),
-            "sum": ee.Reducer.sum(),
-            "stddev": ee.Reducer.stdDev(),
-            "var": ee.Reducer.variance(),
-            "all" : ee.Reducer.mean() \
-                .combine(ee.Reducer.minMax(), sharedInputs=True) \
-                .combine(ee.Reducer.stdDev(), sharedInputs=True)
-        }
-                            
-        def getStats(feature):
-            
-            for year, value in year_dict.items():
-                
-                impervious = dataset.gte(value).multiply(ee.Image.pixelArea())
-                zs_stat = ee.Image(impervious).reduceRegion(
-                    geometry = feature.geometry(),
-                    reducer = allowed_statistics['sum'],
-                    scale = self.scale,
-                    tileScale = self.tile_scale,
-                    bestEffort = True,
-                    maxPixels = 10e15
-                ).get('change_year_index')
-                
-                col_name = ee.String("imperv_").cat(ee.String(str(year)))
-                feature = feature.set(col_name, zs_stat)
-            
-            return feature
-            
-        res = self.target_features.map(getStats)
-        
-        self.task = ee.batch.Export.table.toDrive(
-            collection = res,
-            description = f'Zonal statistics sum of Impervious Surface',
-            fileFormat = 'CSV',    
-            folder = self.output_dir,
-            fileNamePrefix = self.output_name,
-        )
-        self.task.start()
-
-    def reportRunTime(self):
-        start_time = self.task.status()['start_timestamp_ms']
-        update_time = self.task.status()['update_timestamp_ms']
-        if self.task.status()['state'] == "RUNNING":
-            delta = datetime.now() - datetime.fromtimestamp(start_time/1000)
-            print("Still running")
-            print(f"Runtime: {delta.seconds//60} minutes and {delta.seconds % 60} seconds")
-        if self.task.status()['state'] == "COMPLETED":
-            delta = datetime.fromtimestamp(update_time/1000) - datetime.fromtimestamp(start_time/1000)
-            print("Completed")
-            print(f"Runtime: {delta.seconds//60} minutes and {delta.seconds % 60} seconds")
-        if self.task.status()['state'] == "FAILED":
-            print("Failed!")
-            print(self.task.status()['error_message'])
-        if self.task.status()['state'] == "READY":
-            print("Status is Ready, hasn't started")
-
-class ZonalStats_Modis(object):
-    '''
-    Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
-    :param index: Which index to calculate (NDVI, EVI, NDSI, NDWI)
-    :type index: str
-    :param target_features: vector features
-    :type target_features: ee.FeatureCollection (for now)
-    :param statistic_type: statistic to calculate by zone
-    :type statistic_type: str (one of mean, max, median, min, sum, stddev, var)
-    :param output_name: file name for output statistics
-    :type output_name: str
-    :param scale: scale for calculation
-    :type scale: int
-    :param min_threshold: filter out values lower than min_threshold
-    :type min_threshold: int
-    :param water_mask: filter out water
-    :type water_mask: boolean
-    :param frequency: Optional, temporal frequency for aggregation
-    :type frequency: str (monthly, annual, or original) defaults to original (raw temporal frequency of the dataset).
-    :param temporal_stat: Optional, statistic for temporal aggregation
-    :type temporal_stat: str (mean, max, median, min, or sum, defaults to None)
-    :param output_dir: Optional, google drive directory to save outputs
-    :type output_dir: str (defaults to gdrive_folder)
-    '''
-    def __init__(self, target_features, output_name,
-                scale = 250, tile_scale = 4, output_dir = "gdrive_folder",
-                start_year = 2001, end_year = 2020):
-        cat = Catalog()
-        self.target_features = target_features
-        self.output_dir = output_dir
-        self.output_name = output_name
-        self.task = None
-        self.scale = scale
-        self.tile_scale = tile_scale
-        self.start_year = start_year
-        self.end_year = end_year
-        
-    def runZonalStats(self):
-        dataset = ee.ImageCollection("MODIS/006/MCD12Q1").select('LC_Type1')
-        
-        years = list(range(self.start_year, self.end_year, 1))
-        
-        allowed_statistics = {
-            "mean": ee.Reducer.mean(),
-            "max": ee.Reducer.max(),
-            "median": ee.Reducer.median(),
-            "min": ee.Reducer.min(),
-            "sum": ee.Reducer.sum(),
-            "stddev": ee.Reducer.stdDev(),
-            "var": ee.Reducer.variance(),
-            "all" : ee.Reducer.mean() \
-                .combine(ee.Reducer.minMax(), sharedInputs=True) \
-                .combine(ee.Reducer.stdDev(), sharedInputs=True)
-        }
-                            
-        def getStats(feature):
-            
-            for year in years:
-                
-                modis_year = dataset.filter(ee.Filter.calendarRange(year, year, 'year')).first()
-                cropland = modis_year.eq(12).Or(modis_year.eq(14)).eq(1).multiply(ee.Image.pixelArea())
-                
-                zs_stat = ee.Image(cropland).reduceRegion(
-                    geometry = feature.geometry(),
-                    reducer = allowed_statistics['sum'],
-                    scale = self.scale,
-                    tileScale = self.tile_scale,
-                    bestEffort = True,
-                    maxPixels = 10e15
-                ).get('LC_Type1')
-                
-                col_name = ee.String("cropland_").cat(ee.String(str(year)))
-                feature = feature.set(col_name, zs_stat)
-            
-            return feature
-            
-        res = self.target_features.map(getStats)
-        
-        self.task = ee.batch.Export.table.toDrive(
-            collection = res,
-            description = f'Zonal statistics sum of Cropland',
-            fileFormat = 'CSV',    
-            folder = self.output_dir,
-            fileNamePrefix = self.output_name,
-        )
-        self.task.start()
-
-    def reportRunTime(self):
-        start_time = self.task.status()['start_timestamp_ms']
-        update_time = self.task.status()['update_timestamp_ms']
-        if self.task.status()['state'] == "RUNNING":
-            delta = datetime.now() - datetime.fromtimestamp(start_time/1000)
-            print("Still running")
-            print(f"Runtime: {delta.seconds//60} minutes and {delta.seconds % 60} seconds")
-        if self.task.status()['state'] == "COMPLETED":
-            delta = datetime.fromtimestamp(update_time/1000) - datetime.fromtimestamp(start_time/1000)
-            print("Completed")
-            print(f"Runtime: {delta.seconds//60} minutes and {delta.seconds % 60} seconds")
-        if self.task.status()['state'] == "FAILED":
-            print("Failed!")
-            print(self.task.status()['error_message'])
-        if self.task.status()['state'] == "READY":
-            print("Status is Ready, hasn't started")
-            
