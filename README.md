@@ -56,7 +56,7 @@ See docstrings for more details on the input parameters for ZonalStats(). The ou
 
 Currently only depends on *earthengine-api* and *pandas*. In the future we will probably include *geopandas* and *geemap*.
 
-```{important}
+```sh
 conda create -n ee
 conda activate ee
 conda install -c conda-forge earthengine-api
@@ -69,7 +69,7 @@ conda install -c conda-forge notebook
 
 Or, using the environment.yml file (hasn't been tested)
 
-```{important}
+```sh
 conda env create -f environment.yml
 conda activate ee
 earthengine authenticate
