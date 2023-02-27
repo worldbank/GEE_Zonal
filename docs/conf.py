@@ -1,11 +1,14 @@
 # Configuration file for the Sphinx documentation builder.
 import sys, os
-sys.path.append(os.path.abspath('../src'))
+sys.path.append(os.path.abspath('..'))
 
 # mock import these packages because readthedocs doesn't have them installed
 autodoc_mock_imports = [
   'ee',
-  'pandas'
+  'pandas',
+  'geopandas',
+  'geojson',
+  'shapely'
 ]
 
 # -- Project information
@@ -14,8 +17,9 @@ project = 'GEE Zonal'
 copyright = '2021, World Bank'
 author = 'Andres Chamorro'
 
-release = '0.1'
+release = '1.0'
 version = '0.1.0'
+html_title = f"GEE Zonal {release}"
 
 # -- General configuration
 
@@ -25,7 +29,10 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'myst_nb'
 ]
+
+nb_execution_mode = 'off'
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
@@ -37,7 +44,7 @@ templates_path = ['_templates']
 
 # -- Options for HTML output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_book_theme" #'sphinx_rtd_theme' sphinx_book_theme
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'

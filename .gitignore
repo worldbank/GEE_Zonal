@@ -52,6 +52,9 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+_build/
+make.bat
+Makefile
 
 # PyBuilder
 target/
@@ -89,13 +92,4 @@ target/
 .mypy_cache/
 
 # Notebook to test features
-/notebooks/Testing.ipynb
-/notebooks/tests
-/notebooks/client_secrets.json
-/src/garbage.py
-/models
-/references
-/reports
-/src/models
-/src/visualization
-/src/features
+/temp
