@@ -1,5 +1,9 @@
 # GEE Zonal
 
+![pypi](https://img.shields.io/pypi/v/gee-zonal)
+![GitHub issues](https://img.shields.io/github/issues/worldbank/GEE_Zonal?style=plastic)
+![GitHub starts](https://img.shields.io/github/stars/worldbank/GEE_Zonal?style=social)
+
 This python package provides a wrapper function to request temporal and zonal statistics from Google Earth Engine (GEE) datasets.
 
 ## Summary
@@ -22,7 +26,7 @@ pip install gee_zonal
 
 ## Setup
 
-The Earth Engine Python API needs to be authenticated with a Google account. First, sign up to Google Earth Engine [here](https://earthengine.google.com/signup/). 
+The Earth Engine Python API needs to be authenticated with a Google account. First, sign up to Google Earth Engine [here](https://earthengine.google.com/signup/).
 
 Launch a jupyter notebook, and authenticate your account with the ee library.
 
@@ -51,7 +55,7 @@ python -m ipykernel install --user --name ee --display-name "Earth Engine"
 
 ## Usage
 
-### ZonalStats() 
+### ZonalStats()
 
 Main class to calculate temporal and zonal statistics using the GEE backend. The object can be initialized with parameters specifying data inputs and the type of aggregation.
 
@@ -106,7 +110,7 @@ print(results)
 ## Additional Resources
 
 - [geemap](https://geemap.org/): Python libary with more functionality to work with GEE.
-- [awesome-gee-community-catalog](https://gee-community-catalog.org/): Extended catalog of EE datasets. 
+- [awesome-gee-community-catalog](https://gee-community-catalog.org/): Extended catalog of EE datasets.
 
 ## License
 
