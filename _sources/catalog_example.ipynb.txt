@@ -1,0 +1,604 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "7d6b4cbe",
+   "metadata": {},
+   "source": [
+    "# Catalog Example"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "transparent-marketing",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from gee_zonal import Catalog"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "documentary-reason",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "cat = Catalog()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "incredible-massachusetts",
+   "metadata": {},
+   "source": [
+    "Access the Earth Engine data catalog through Catalog.datasets"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "incomplete-bunch",
+   "metadata": {
+     "tags": [
+         "scroll-output"
+     ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>provider</th>\n",
+       "      <th>title</th>\n",
+       "      <th>start_date</th>\n",
+       "      <th>end_date</th>\n",
+       "      <th>startyear</th>\n",
+       "      <th>endyear</th>\n",
+       "      <th>type</th>\n",
+       "      <th>tags</th>\n",
+       "      <th>asset_url</th>\n",
+       "      <th>thumbnail_url</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>AAFC/ACI</td>\n",
+       "      <td>Agriculture and Agri-Food Canada</td>\n",
+       "      <td>Canada AAFC Annual Crop Inventory</td>\n",
+       "      <td>2009-01-01</td>\n",
+       "      <td>2020-01-01</td>\n",
+       "      <td>2009</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>image_collection</td>\n",
+       "      <td>[aafc, canada, crop, landcover]</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>ACA/reef_habitat/v1_0</td>\n",
+       "      <td>Allen Coral Atlas Partnership (ACA)</td>\n",
+       "      <td>Allen Coral Atlas (ACA) - Geomorphic Zonation ...</td>\n",
+       "      <td>2018-01-01</td>\n",
+       "      <td>2021-01-01</td>\n",
+       "      <td>2018</td>\n",
+       "      <td>2021</td>\n",
+       "      <td>image</td>\n",
+       "      <td>[coral, ocean, planet_derived, reef, seagrass,...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>ACA/reef_habitat/v2_0</td>\n",
+       "      <td>Allen Coral Atlas Partnership (ACA)</td>\n",
+       "      <td>Allen Coral Atlas (ACA) - Geomorphic Zonation ...</td>\n",
+       "      <td>2018-01-01</td>\n",
+       "      <td>2021-01-01</td>\n",
+       "      <td>2018</td>\n",
+       "      <td>2021</td>\n",
+       "      <td>image</td>\n",
+       "      <td>[coral, ocean, planet_derived, reef, seagrass,...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>AHN/AHN2_05M_INT</td>\n",
+       "      <td>AHN</td>\n",
+       "      <td>AHN Netherlands 0.5m DEM, Interpolated</td>\n",
+       "      <td>2012-01-01</td>\n",
+       "      <td>2012-01-01</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>image</td>\n",
+       "      <td>[ahn, dem, elevation, geophysical, lidar, neth...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>AHN/AHN2_05M_NON</td>\n",
+       "      <td>AHN</td>\n",
+       "      <td>AHN Netherlands 0.5m DEM, Non-Interpolated</td>\n",
+       "      <td>2012-01-01</td>\n",
+       "      <td>2012-01-01</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>image</td>\n",
+       "      <td>[ahn, dem, elevation, geophysical, lidar, neth...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                      id                             provider  \\\n",
+       "0               AAFC/ACI     Agriculture and Agri-Food Canada   \n",
+       "1  ACA/reef_habitat/v1_0  Allen Coral Atlas Partnership (ACA)   \n",
+       "2  ACA/reef_habitat/v2_0  Allen Coral Atlas Partnership (ACA)   \n",
+       "3       AHN/AHN2_05M_INT                                  AHN   \n",
+       "4       AHN/AHN2_05M_NON                                  AHN   \n",
+       "\n",
+       "                                               title start_date   end_date  \\\n",
+       "0                  Canada AAFC Annual Crop Inventory 2009-01-01 2020-01-01   \n",
+       "1  Allen Coral Atlas (ACA) - Geomorphic Zonation ... 2018-01-01 2021-01-01   \n",
+       "2  Allen Coral Atlas (ACA) - Geomorphic Zonation ... 2018-01-01 2021-01-01   \n",
+       "3             AHN Netherlands 0.5m DEM, Interpolated 2012-01-01 2012-01-01   \n",
+       "4         AHN Netherlands 0.5m DEM, Non-Interpolated 2012-01-01 2012-01-01   \n",
+       "\n",
+       "   startyear  endyear              type  \\\n",
+       "0       2009     2020  image_collection   \n",
+       "1       2018     2021             image   \n",
+       "2       2018     2021             image   \n",
+       "3       2012     2012             image   \n",
+       "4       2012     2012             image   \n",
+       "\n",
+       "                                                tags  \\\n",
+       "0                    [aafc, canada, crop, landcover]   \n",
+       "1  [coral, ocean, planet_derived, reef, seagrass,...   \n",
+       "2  [coral, ocean, planet_derived, reef, seagrass,...   \n",
+       "3  [ahn, dem, elevation, geophysical, lidar, neth...   \n",
+       "4  [ahn, dem, elevation, geophysical, lidar, neth...   \n",
+       "\n",
+       "                                           asset_url  \\\n",
+       "0  https://developers.google.com/earth-engine/dat...   \n",
+       "1  https://developers.google.com/earth-engine/dat...   \n",
+       "2  https://developers.google.com/earth-engine/dat...   \n",
+       "3  https://developers.google.com/earth-engine/dat...   \n",
+       "4  https://developers.google.com/earth-engine/dat...   \n",
+       "\n",
+       "                                       thumbnail_url  \n",
+       "0  https://developers.google.com/earth-engine/dat...  \n",
+       "1  https://developers.google.com/earth-engine/dat...  \n",
+       "2  https://developers.google.com/earth-engine/dat...  \n",
+       "3  https://developers.google.com/earth-engine/dat...  \n",
+       "4  https://developers.google.com/earth-engine/dat...  "
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "cat.datasets.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cultural-filename",
+   "metadata": {},
+   "source": [
+    "The *Catalog* object also has search functionality. Search functions return a new catalog of datasets that matched the search parameters."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "applied-liverpool",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "results = cat.search_tags(\"ndvi\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "respective-underwear",
+   "metadata": {
+     "tags": [
+         "scroll-output"
+     ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "251    Landsat 8 Collection 1 Tier 1 8-Day NDVI Compo...\n",
+      "259    Landsat 8 Collection 1 Tier 1 32-Day NDVI Comp...\n",
+      "268    Landsat 8 Collection 1 Tier 1 Annual NDVI Comp...\n",
+      "292          Landsat 8 8-Day NDVI Composite [deprecated]\n",
+      "300         Landsat 8 32-Day NDVI Composite [deprecated]\n",
+      "309         Landsat 8 Annual NDVI Composite [deprecated]\n",
+      "326    Landsat 7 Collection 1 Tier 1 8-Day NDVI Compo...\n",
+      "334    Landsat 7 Collection 1 Tier 1 32-Day NDVI Comp...\n",
+      "343    Landsat 7 Collection 1 Tier 1 Annual NDVI Comp...\n",
+      "367          Landsat 7 8-Day NDVI Composite [deprecated]\n",
+      "375         Landsat 7 32-Day NDVI Composite [deprecated]\n",
+      "384         Landsat 7 Annual NDVI Composite [deprecated]\n",
+      "431    Landsat 4 TM Collection 1 Tier 1 8-Day NDVI Co...\n",
+      "439    Landsat 4 TM Collection 1 Tier 1 32-Day NDVI C...\n",
+      "448    Landsat 4 TM Collection 1 Tier 1 Annual NDVI C...\n",
+      "468       Landsat 4 TM 8-Day NDVI Composite [deprecated]\n",
+      "476      Landsat 4 TM 32-Day NDVI Composite [deprecated]\n",
+      "485      Landsat 4 TM Annual NDVI Composite [deprecated]\n",
+      "496    Landsat 5 TM Collection 1 Tier 1 8-Day NDVI Co...\n",
+      "504    Landsat 5 TM Collection 1 Tier 1 32-Day NDVI C...\n",
+      "513    Landsat 5 TM Collection 1 Tier 1 Annual NDVI C...\n",
+      "533       Landsat 5 TM 8-Day NDVI Composite [deprecated]\n",
+      "541      Landsat 5 TM 32-Day NDVI Composite [deprecated]\n",
+      "550      Landsat 5 TM Annual NDVI Composite [deprecated]\n",
+      "588    MOD13A1.006 Terra Vegetation Indices 16-Day Gl...\n",
+      "589    MOD13A2.006 Terra Vegetation Indices 16-Day Gl...\n",
+      "590    MOD13Q1.006 Terra Vegetation Indices 16-Day Gl...\n",
+      "609    MYD13A1.006 Aqua Vegetation Indices 16-Day Glo...\n",
+      "610    MYD13A2.006 Aqua Vegetation Indices 16-Day Glo...\n",
+      "611    MYD13Q1.006 Aqua Vegetation Indices 16-Day Glo...\n",
+      "638    MOD13A1.061 Terra Vegetation Indices 16-Day Gl...\n",
+      "639    MOD13A2.061 Terra Vegetation Indices 16-Day Gl...\n",
+      "640    MOD13Q1.061 Terra Vegetation Indices 16-Day Gl...\n",
+      "657    MYD13A1.061 Aqua Vegetation Indices 16-Day Glo...\n",
+      "658    MYD13A2.061 Aqua Vegetation Indices 16-Day Glo...\n",
+      "659    MYD13Q1.061 Aqua Vegetation Indices 16-Day Glo...\n",
+      "675                           MODIS Combined 16-Day NDVI\n",
+      "680              MODIS Combined 16-Day NDVI [deprecated]\n",
+      "687                               MODIS Terra Daily NDVI\n",
+      "692                  MODIS Terra Daily NDVI [deprecated]\n",
+      "699    MOD13A1.005 Vegetation Indices 16-Day L3 Globa...\n",
+      "700    MOD13Q1.005 Vegetation Indices 16-Day Global 2...\n",
+      "707                                MODIS Aqua Daily NDVI\n",
+      "712                   MODIS Aqua Daily NDVI [deprecated]\n",
+      "719    MYD13A1.005 Vegetation Indices 16-Day L3 Globa...\n",
+      "720    MYD13Q1.005 Vegetation Indices 16-Day Global 2...\n",
+      "722    AG100: ASTER Global Emissivity Dataset 100-met...\n",
+      "727       GIMMS NDVI From AVHRR Sensors (3rd Generation)\n",
+      "768    NOAA CDR AVHRR NDVI: Normalized Difference Veg...\n",
+      "769    NOAA CDR AVHRR NDVI: Normalized Difference Veg...\n",
+      "807        VNP13A1: VIIRS Vegetation Indices 16-Day 500m\n",
+      "811    VNP22Q2: Land Surface Phenology Yearly L3 Glob...\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(results)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "hindu-portal",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "results = results.search_by_year(1995)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "loose-devices",
+   "metadata": {
+     "tags": [
+         "scroll-output"
+     ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "496    Landsat 5 TM Collection 1 Tier 1 8-Day NDVI Co...\n",
+      "504    Landsat 5 TM Collection 1 Tier 1 32-Day NDVI C...\n",
+      "513    Landsat 5 TM Collection 1 Tier 1 Annual NDVI C...\n",
+      "533       Landsat 5 TM 8-Day NDVI Composite [deprecated]\n",
+      "541      Landsat 5 TM 32-Day NDVI Composite [deprecated]\n",
+      "550      Landsat 5 TM Annual NDVI Composite [deprecated]\n",
+      "727       GIMMS NDVI From AVHRR Sensors (3rd Generation)\n",
+      "768    NOAA CDR AVHRR NDVI: Normalized Difference Veg...\n",
+      "769    NOAA CDR AVHRR NDVI: Normalized Difference Veg...\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(results)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "valuable-tackle",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "results = results.search_title(\"landsat\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "colored-accuracy",
+   "metadata": {
+     "tags": [
+         "scroll-output"
+     ]
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>provider</th>\n",
+       "      <th>title</th>\n",
+       "      <th>start_date</th>\n",
+       "      <th>end_date</th>\n",
+       "      <th>startyear</th>\n",
+       "      <th>endyear</th>\n",
+       "      <th>type</th>\n",
+       "      <th>tags</th>\n",
+       "      <th>asset_url</th>\n",
+       "      <th>thumbnail_url</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>496</th>\n",
+       "      <td>LANDSAT/LT05/C01/T1_8DAY_NDVI</td>\n",
+       "      <td>Google</td>\n",
+       "      <td>Landsat 5 TM Collection 1 Tier 1 8-Day NDVI Co...</td>\n",
+       "      <td>1984-01-01</td>\n",
+       "      <td>2012-04-30</td>\n",
+       "      <td>1984</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>image_collection</td>\n",
+       "      <td>[landsat, ndvi, usgs]</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>504</th>\n",
+       "      <td>LANDSAT/LT05/C01/T1_32DAY_NDVI</td>\n",
+       "      <td>Google</td>\n",
+       "      <td>Landsat 5 TM Collection 1 Tier 1 32-Day NDVI C...</td>\n",
+       "      <td>1984-01-01</td>\n",
+       "      <td>2012-04-06</td>\n",
+       "      <td>1984</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>image_collection</td>\n",
+       "      <td>[landsat, ndvi, usgs]</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>513</th>\n",
+       "      <td>LANDSAT/LT05/C01/T1_ANNUAL_NDVI</td>\n",
+       "      <td>Google</td>\n",
+       "      <td>Landsat 5 TM Collection 1 Tier 1 Annual NDVI C...</td>\n",
+       "      <td>1984-01-01</td>\n",
+       "      <td>2012-01-01</td>\n",
+       "      <td>1984</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>image_collection</td>\n",
+       "      <td>[landsat, ndvi, usgs]</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>533</th>\n",
+       "      <td>LANDSAT/LT5_L1T_8DAY_NDVI</td>\n",
+       "      <td>USGS</td>\n",
+       "      <td>Landsat 5 TM 8-Day NDVI Composite [deprecated]</td>\n",
+       "      <td>1984-01-01</td>\n",
+       "      <td>2012-04-30</td>\n",
+       "      <td>1984</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>image_collection</td>\n",
+       "      <td>[landsat, ndvi, usgs]</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>541</th>\n",
+       "      <td>LANDSAT/LT5_L1T_32DAY_NDVI</td>\n",
+       "      <td>USGS</td>\n",
+       "      <td>Landsat 5 TM 32-Day NDVI Composite [deprecated]</td>\n",
+       "      <td>1984-01-01</td>\n",
+       "      <td>2012-04-06</td>\n",
+       "      <td>1984</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>image_collection</td>\n",
+       "      <td>[landsat, ndvi, usgs]</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>550</th>\n",
+       "      <td>LANDSAT/LT5_L1T_ANNUAL_NDVI</td>\n",
+       "      <td>USGS</td>\n",
+       "      <td>Landsat 5 TM Annual NDVI Composite [deprecated]</td>\n",
+       "      <td>1984-01-01</td>\n",
+       "      <td>2012-01-01</td>\n",
+       "      <td>1984</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>image_collection</td>\n",
+       "      <td>[landsat, ndvi, usgs]</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "      <td>https://developers.google.com/earth-engine/dat...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                  id provider  \\\n",
+       "496    LANDSAT/LT05/C01/T1_8DAY_NDVI   Google   \n",
+       "504   LANDSAT/LT05/C01/T1_32DAY_NDVI   Google   \n",
+       "513  LANDSAT/LT05/C01/T1_ANNUAL_NDVI   Google   \n",
+       "533        LANDSAT/LT5_L1T_8DAY_NDVI     USGS   \n",
+       "541       LANDSAT/LT5_L1T_32DAY_NDVI     USGS   \n",
+       "550      LANDSAT/LT5_L1T_ANNUAL_NDVI     USGS   \n",
+       "\n",
+       "                                                 title start_date   end_date  \\\n",
+       "496  Landsat 5 TM Collection 1 Tier 1 8-Day NDVI Co... 1984-01-01 2012-04-30   \n",
+       "504  Landsat 5 TM Collection 1 Tier 1 32-Day NDVI C... 1984-01-01 2012-04-06   \n",
+       "513  Landsat 5 TM Collection 1 Tier 1 Annual NDVI C... 1984-01-01 2012-01-01   \n",
+       "533     Landsat 5 TM 8-Day NDVI Composite [deprecated] 1984-01-01 2012-04-30   \n",
+       "541    Landsat 5 TM 32-Day NDVI Composite [deprecated] 1984-01-01 2012-04-06   \n",
+       "550    Landsat 5 TM Annual NDVI Composite [deprecated] 1984-01-01 2012-01-01   \n",
+       "\n",
+       "     startyear  endyear              type                   tags  \\\n",
+       "496       1984     2012  image_collection  [landsat, ndvi, usgs]   \n",
+       "504       1984     2012  image_collection  [landsat, ndvi, usgs]   \n",
+       "513       1984     2012  image_collection  [landsat, ndvi, usgs]   \n",
+       "533       1984     2012  image_collection  [landsat, ndvi, usgs]   \n",
+       "541       1984     2012  image_collection  [landsat, ndvi, usgs]   \n",
+       "550       1984     2012  image_collection  [landsat, ndvi, usgs]   \n",
+       "\n",
+       "                                             asset_url  \\\n",
+       "496  https://developers.google.com/earth-engine/dat...   \n",
+       "504  https://developers.google.com/earth-engine/dat...   \n",
+       "513  https://developers.google.com/earth-engine/dat...   \n",
+       "533  https://developers.google.com/earth-engine/dat...   \n",
+       "541  https://developers.google.com/earth-engine/dat...   \n",
+       "550  https://developers.google.com/earth-engine/dat...   \n",
+       "\n",
+       "                                         thumbnail_url  \n",
+       "496  https://developers.google.com/earth-engine/dat...  \n",
+       "504  https://developers.google.com/earth-engine/dat...  \n",
+       "513  https://developers.google.com/earth-engine/dat...  \n",
+       "533  https://developers.google.com/earth-engine/dat...  \n",
+       "541  https://developers.google.com/earth-engine/dat...  \n",
+       "550  https://developers.google.com/earth-engine/dat...  "
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {
+       "tags": [
+           "scroll-output"
+       ]
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "results.datasets"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Package Test",
+   "language": "python",
+   "name": "pkg"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.0"
+  },
+  "toc": {
+   "base_numbering": 1,
+   "nav_menu": {},
+   "number_sections": true,
+   "sideBar": true,
+   "skip_h1_title": false,
+   "title_cell": "Table of Contents",
+   "title_sidebar": "Contents",
+   "toc_cell": false,
+   "toc_position": {},
+   "toc_section_display": true,
+   "toc_window_display": false
+  },
+  "varInspector": {
+   "cols": {
+    "lenName": 16,
+    "lenType": 16,
+    "lenVar": 40
+   },
+   "kernels_config": {
+    "python": {
+     "delete_cmd_postfix": "",
+     "delete_cmd_prefix": "del ",
+     "library": "var_list.py",
+     "varRefreshCmd": "print(var_dic_list())"
+    },
+    "r": {
+     "delete_cmd_postfix": ") ",
+     "delete_cmd_prefix": "rm(",
+     "library": "var_list.r",
+     "varRefreshCmd": "cat(var_dic_list()) "
+    }
+   },
+   "types_to_exclude": [
+    "module",
+    "function",
+    "builtin_function_or_method",
+    "instance",
+    "_Feature"
+   ],
+   "window_display": false
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

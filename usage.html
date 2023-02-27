@@ -1,0 +1,570 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Usage &#8212; GEE Zonal 1.0</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.1ae1adf31bcec4f5a66e594d147bbc00e33ac08d67b8f5697420a1436a24298a.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Notebook Example" href="zonal_statistics_example.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">GEE Zonal 1.0</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Documentation
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Usage
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Examples
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="zonal_statistics_example.html">
+   Notebook Example
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="catalog_example.html">
+   Catalog Example
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="_sources/usage.rst.txt"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.rst</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-a-zonalstats-object">
+   Creating a ZonalStats object
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#retrieving-output-table">
+   Retrieving output table
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#retrieve-output-table-directly">
+     1. Retrieve output table directly
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#submit-an-ee-task">
+     2. Submit an EE Task
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#searching-the-ee-catalog">
+   Searching the EE catalog
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#initialize-catalog-object">
+     Initialize Catalog Object
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#search-functions">
+     Search functions
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Usage</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-a-zonalstats-object">
+   Creating a ZonalStats object
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#retrieving-output-table">
+   Retrieving output table
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#retrieve-output-table-directly">
+     1. Retrieve output table directly
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#submit-an-ee-task">
+     2. Submit an EE Task
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#searching-the-ee-catalog">
+   Searching the EE catalog
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#initialize-catalog-object">
+     Initialize Catalog Object
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#search-functions">
+     Search functions
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">#</a></h1>
+<section id="creating-a-zonalstats-object">
+<h2>Creating a ZonalStats object<a class="headerlink" href="#creating-a-zonalstats-object" title="Permalink to this headline">#</a></h2>
+<p><strong>ZonalStats()</strong> is the main class to request temporal and zonal statistics
+using the GEE backend. The object can be initialized with parameters
+specifying data inputs and the type of aggregation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gee_zonal.zonalstats.ZonalStats">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gee_zonal.zonalstats.</span></span><span class="sig-name descname"><span class="pre">ZonalStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ee_dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'original'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temporal_stat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.zonalstats.ZonalStats" title="Permalink to this definition">#</a></dt>
+<dd><p>Python class to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollection or ee.Image) over vector shapes (ee.FeatureCollections).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_features</strong> (<em>ee.FeatureCollection</em><em>, </em><em>gpd.GeoDataFrame</em><em>, or </em><em>str path to a shapefile/GeoJSON</em>) – vector features</p></li>
+<li><p><strong>statistic_type</strong> (<em>str - mean</em><em>, </em><em>max</em><em>, </em><em>median</em><em>, </em><em>min</em><em>, </em><em>sum</em><em>, </em><em>stddev</em><em>, </em><em>var</em><em>, </em><em>count</em><em>, </em><em>minmax</em><em>, </em><em>p75</em><em>, </em><em>p25</em><em>, </em><em>p95</em><em>, </em><em>all</em>) – method to aggregate image pixels by zone</p></li>
+<li><p><strong>collection_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>default: None</em>) – ID for Earth Engine dataset</p></li>
+<li><p><strong>ee_dataset</strong> (<em>ee.Image</em><em> or </em><em>ee.ImageCollection</em><em>, </em><em>default: None</em>) – input dataset if no collection ID is provided</p></li>
+<li><p><strong>band</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>default: None</em>) – name of image band to use</p></li>
+<li><p><strong>output_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>default: None</em>) – file name for output statistics if saved to Google Drive</p></li>
+<li><p><strong>output_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>default: None</em>) – directory name for output statistics if saved to Google Drive</p></li>
+<li><p><strong>frequency</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> (</em><em>monthly</em><em>, </em><em>annual</em><em>, or </em><em>original</em><em>)</em><em>, </em><em>default: original</em>) – temporal frequency for aggregation</p></li>
+<li><p><strong>temporal_stat</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> (</em><em>mean</em><em>, </em><em>max</em><em>, </em><em>median</em><em>, </em><em>min</em><em>, </em><em>sum</em><em>)</em><em>, </em><em>default: None</em>) – statistic for temporal aggregation</p></li>
+<li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: 250</em>) – scale for calculation in mts</p></li>
+<li><p><strong>min_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: None</em>) – filter out values lower than treshold</p></li>
+<li><p><strong>mask</strong> (<em>ee.Image</em><em>, </em><em>default: None</em>) – filter out observations where mask is zero</p></li>
+<li><p><strong>tile_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: 1</em>) – tile scale factor for parallel processing</p></li>
+<li><p><strong>start_year</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: None</em>) – specify start year for statistics</p></li>
+<li><p><strong>end_year</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: None</em>) – specify end year for statistics</p></li>
+<li><p><strong>scale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: None</em>) – scale factor to multiply ee.Image to get correct units</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Input target features can be referenced directly as a GEE asset, or can be supplied
+as a <code class="docutils literal notranslate"><span class="pre">geopandas.GeoDataFrame</span></code>, or a path to a shapefile/GeoJSON (will be automatically
+converted to <code class="docutils literal notranslate"><span class="pre">ee.FeatureCollection</span></code>).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gee_zonal.zonalstats.ZonalStats.runZonalStats">
+<span class="sig-prename descclassname"><span class="pre">ZonalStats.</span></span><span class="sig-name descname"><span class="pre">runZonalStats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.zonalstats.ZonalStats.runZonalStats" title="Permalink to this definition">#</a></dt>
+<dd><p>Run zonal statistics aggregation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>tabular statistics</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>DataFrame or dict with EE task status if output_name/dir is specified</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="retrieving-output-table">
+<h2>Retrieving output table<a class="headerlink" href="#retrieving-output-table" title="Permalink to this headline">#</a></h2>
+<section id="retrieve-output-table-directly">
+<h3>1. Retrieve output table directly<a class="headerlink" href="#retrieve-output-table-directly" title="Permalink to this headline">#</a></h3>
+<p>Statistics can be accessed as the result of <code class="docutils literal notranslate"><span class="pre">ZonalStats.runZonalStats()</span></code>
+This will be computed within the python earth engine environment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gee_zonal</span> <span class="kn">import</span> <span class="n">ZonalStats</span>
+<span class="n">AOIs</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">FeatureCollection</span><span class="p">(</span><span class="s1">&#39;users/afche18/Ethiopia_AOI&#39;</span><span class="p">)</span> <span class="c1"># ID of ee.FeatureCollection</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="n">ZonalStats</span><span class="p">(</span>
+  <span class="n">collection_id</span> <span class="o">=</span> <span class="s1">&#39;LANDSAT/LC08/C01/T1_8DAY_NDVI&#39;</span><span class="p">,</span>
+  <span class="n">target_features</span> <span class="o">=</span> <span class="n">AOIs</span><span class="p">,</span>
+  <span class="n">statistic_type</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="c1"># all includes min, max, mean, and stddev</span>
+  <span class="n">frequency</span> <span class="o">=</span> <span class="s2">&quot;annual&quot;</span><span class="p">,</span>
+  <span class="n">temporal_stat</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span>
+<span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">zs</span><span class="o">.</span><span class="n">runZonalStats</span><span class="p">()</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</section>
+<section id="submit-an-ee-task">
+<h3>2. Submit an EE Task<a class="headerlink" href="#submit-an-ee-task" title="Permalink to this headline">#</a></h3>
+<p>Alternatively, a task can be submitted to the Earth Engine servers
+by specifying an <em>output_name</em> and <em>outuput_dir</em>.</p>
+<p>This option is recommended to run statistics for big areas or for a high
+number of collections. The output table will be saved on the specified
+directory in Google Drive.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span>
+<span class="kn">from</span> <span class="nn">gee_tools</span> <span class="kn">import</span> <span class="n">ZonalStats</span>
+<span class="n">zs</span> <span class="o">=</span> <span class="n">ZonalStats</span><span class="p">(</span>
+  <span class="n">collection_id</span> <span class="o">=</span> <span class="s1">&#39;LANDSAT/LC08/C01/T1_8DAY_NDVI&#39;</span><span class="p">,</span>
+  <span class="n">target_features</span> <span class="o">=</span> <span class="n">AOIs</span><span class="p">,</span>
+  <span class="n">statistic_type</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="c1"># all includes min, max, mean, and stddev</span>
+  <span class="n">frequency</span> <span class="o">=</span> <span class="s2">&quot;annual&quot;</span><span class="p">,</span>
+  <span class="n">temporal_stat</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+  <span class="n">output_dir</span> <span class="o">=</span> <span class="s2">&quot;pretty_folder&quot;</span><span class="p">,</span>
+  <span class="n">output_name</span><span class="o">=</span> <span class="s2">&quot;pretty_file&quot;</span>
+<span class="p">)</span>
+<span class="n">zs</span><span class="o">.</span><span class="n">runZonalStats</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The status of the task can be monitored with <code class="docutils literal notranslate"><span class="pre">ZonalStats.reportRunTime()</span></code></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zs</span><span class="o">.</span><span class="n">reportRunTime</span><span class="p">()</span>
+<span class="go">Completed</span>
+<span class="go">Runtime: 0 minutes and 2 seconds</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="searching-the-ee-catalog">
+<h2>Searching the EE catalog<a class="headerlink" href="#searching-the-ee-catalog" title="Permalink to this headline">#</a></h2>
+<p>The <a class="reference external" href="https://developers.google.com/earth-engine/datasets">Earth Engine Data Catalog</a>
+is an archive of public datasets available via Google Earth Engine. The <strong>Catalog()</strong>
+class provides a quick way to search for datasets by tags, title, and year / time period.</p>
+<section id="initialize-catalog-object">
+<h3>Initialize Catalog Object<a class="headerlink" href="#initialize-catalog-object" title="Permalink to this headline">#</a></h3>
+<p>The catalog object contains a <code class="docutils literal notranslate"><span class="pre">datasets</span></code> variable, a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>
+containing a copy of the Earth Engine data catalog.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gee_zonal</span> <span class="kn">import</span> <span class="n">Catalog</span>
+<span class="n">cat</span> <span class="o">=</span> <span class="n">Catalog</span><span class="p">()</span>
+<span class="n">cat</span><span class="o">.</span><span class="n">datasets</span>
+</pre></div>
+</div>
+</section>
+<section id="search-functions">
+<h3>Search functions<a class="headerlink" href="#search-functions" title="Permalink to this headline">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">search_tags</span><span class="p">(</span><span class="s2">&quot;ndvi&quot;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">search_by_period</span><span class="p">(</span><span class="mi">1985</span><span class="p">,</span> <span class="mi">2021</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">search_title</span><span class="p">(</span><span class="s2">&quot;landsat&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gee_zonal.catalog.</span></span><span class="sig-name descname"><span class="pre">Catalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redownload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog" title="Permalink to this definition">#</a></dt>
+<dd><p>Inventory of Earth Engine public, saved as a DataFrame under datasets variable</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog.search_by_period">
+<span class="sig-name descname"><span class="pre">search_by_period</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog.search_by_period" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>get all datasets that intersect a time period:</dt><dd><p>start of dataset &lt;= end year
+end of dataset &gt;= start year</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog.search_by_year">
+<span class="sig-name descname"><span class="pre">search_by_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog.search_by_year" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>get all datasets from a particular year:</dt><dd><p>dataset start &lt;= year &lt;= dataset end</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog.search_tags">
+<span class="sig-name descname"><span class="pre">search_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyword</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog.search_tags" title="Permalink to this definition">#</a></dt>
+<dd><p>search for keyword in tags</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog.search_title">
+<span class="sig-name descname"><span class="pre">search_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyword</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog.search_title" title="Permalink to this definition">#</a></dt>
+<dd><p>search for keyword in title</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="installation.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Installation</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="zonal_statistics_example.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Notebook Example</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Andres Chamorro<br/>
+  
+      &copy; Copyright 2021, World Bank.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>

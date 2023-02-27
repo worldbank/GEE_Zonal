@@ -1,0 +1,655 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Catalog Example &#8212; GEE Zonal 1.0</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.1ae1adf31bcec4f5a66e594d147bbc00e33ac08d67b8f5697420a1436a24298a.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Notebook Example" href="zonal_statistics_example.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      
+      
+      <h1 class="site-logo" id="site-title">GEE Zonal 1.0</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Documentation
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="usage.html">
+   Usage
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Examples
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="zonal_statistics_example.html">
+   Notebook Example
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Catalog Example
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="_sources/catalog_example.ipynb.txt"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Catalog Example</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section id="catalog-example">
+<h1>Catalog Example<a class="headerlink" href="#catalog-example" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gee_zonal</span> <span class="kn">import</span> <span class="n">Catalog</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">=</span> <span class="n">Catalog</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Access the Earth Engine data catalog through Catalog.datasets</p>
+<div class="cell tag_scroll-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cat</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>provider</th>
+      <th>title</th>
+      <th>start_date</th>
+      <th>end_date</th>
+      <th>startyear</th>
+      <th>endyear</th>
+      <th>type</th>
+      <th>tags</th>
+      <th>asset_url</th>
+      <th>thumbnail_url</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>AAFC/ACI</td>
+      <td>Agriculture and Agri-Food Canada</td>
+      <td>Canada AAFC Annual Crop Inventory</td>
+      <td>2009-01-01</td>
+      <td>2020-01-01</td>
+      <td>2009</td>
+      <td>2020</td>
+      <td>image_collection</td>
+      <td>[aafc, canada, crop, landcover]</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ACA/reef_habitat/v1_0</td>
+      <td>Allen Coral Atlas Partnership (ACA)</td>
+      <td>Allen Coral Atlas (ACA) - Geomorphic Zonation ...</td>
+      <td>2018-01-01</td>
+      <td>2021-01-01</td>
+      <td>2018</td>
+      <td>2021</td>
+      <td>image</td>
+      <td>[coral, ocean, planet_derived, reef, seagrass,...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ACA/reef_habitat/v2_0</td>
+      <td>Allen Coral Atlas Partnership (ACA)</td>
+      <td>Allen Coral Atlas (ACA) - Geomorphic Zonation ...</td>
+      <td>2018-01-01</td>
+      <td>2021-01-01</td>
+      <td>2018</td>
+      <td>2021</td>
+      <td>image</td>
+      <td>[coral, ocean, planet_derived, reef, seagrass,...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>AHN/AHN2_05M_INT</td>
+      <td>AHN</td>
+      <td>AHN Netherlands 0.5m DEM, Interpolated</td>
+      <td>2012-01-01</td>
+      <td>2012-01-01</td>
+      <td>2012</td>
+      <td>2012</td>
+      <td>image</td>
+      <td>[ahn, dem, elevation, geophysical, lidar, neth...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>AHN/AHN2_05M_NON</td>
+      <td>AHN</td>
+      <td>AHN Netherlands 0.5m DEM, Non-Interpolated</td>
+      <td>2012-01-01</td>
+      <td>2012-01-01</td>
+      <td>2012</td>
+      <td>2012</td>
+      <td>image</td>
+      <td>[ahn, dem, elevation, geophysical, lidar, neth...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The <em>Catalog</em> object also has search functionality. Search functions return a new catalog of datasets that matched the search parameters.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">search_tags</span><span class="p">(</span><span class="s2">&quot;ndvi&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_scroll-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>251    Landsat 8 Collection 1 Tier 1 8-Day NDVI Compo...
+259    Landsat 8 Collection 1 Tier 1 32-Day NDVI Comp...
+268    Landsat 8 Collection 1 Tier 1 Annual NDVI Comp...
+292          Landsat 8 8-Day NDVI Composite [deprecated]
+300         Landsat 8 32-Day NDVI Composite [deprecated]
+309         Landsat 8 Annual NDVI Composite [deprecated]
+326    Landsat 7 Collection 1 Tier 1 8-Day NDVI Compo...
+334    Landsat 7 Collection 1 Tier 1 32-Day NDVI Comp...
+343    Landsat 7 Collection 1 Tier 1 Annual NDVI Comp...
+367          Landsat 7 8-Day NDVI Composite [deprecated]
+375         Landsat 7 32-Day NDVI Composite [deprecated]
+384         Landsat 7 Annual NDVI Composite [deprecated]
+431    Landsat 4 TM Collection 1 Tier 1 8-Day NDVI Co...
+439    Landsat 4 TM Collection 1 Tier 1 32-Day NDVI C...
+448    Landsat 4 TM Collection 1 Tier 1 Annual NDVI C...
+468       Landsat 4 TM 8-Day NDVI Composite [deprecated]
+476      Landsat 4 TM 32-Day NDVI Composite [deprecated]
+485      Landsat 4 TM Annual NDVI Composite [deprecated]
+496    Landsat 5 TM Collection 1 Tier 1 8-Day NDVI Co...
+504    Landsat 5 TM Collection 1 Tier 1 32-Day NDVI C...
+513    Landsat 5 TM Collection 1 Tier 1 Annual NDVI C...
+533       Landsat 5 TM 8-Day NDVI Composite [deprecated]
+541      Landsat 5 TM 32-Day NDVI Composite [deprecated]
+550      Landsat 5 TM Annual NDVI Composite [deprecated]
+588    MOD13A1.006 Terra Vegetation Indices 16-Day Gl...
+589    MOD13A2.006 Terra Vegetation Indices 16-Day Gl...
+590    MOD13Q1.006 Terra Vegetation Indices 16-Day Gl...
+609    MYD13A1.006 Aqua Vegetation Indices 16-Day Glo...
+610    MYD13A2.006 Aqua Vegetation Indices 16-Day Glo...
+611    MYD13Q1.006 Aqua Vegetation Indices 16-Day Glo...
+638    MOD13A1.061 Terra Vegetation Indices 16-Day Gl...
+639    MOD13A2.061 Terra Vegetation Indices 16-Day Gl...
+640    MOD13Q1.061 Terra Vegetation Indices 16-Day Gl...
+657    MYD13A1.061 Aqua Vegetation Indices 16-Day Glo...
+658    MYD13A2.061 Aqua Vegetation Indices 16-Day Glo...
+659    MYD13Q1.061 Aqua Vegetation Indices 16-Day Glo...
+675                           MODIS Combined 16-Day NDVI
+680              MODIS Combined 16-Day NDVI [deprecated]
+687                               MODIS Terra Daily NDVI
+692                  MODIS Terra Daily NDVI [deprecated]
+699    MOD13A1.005 Vegetation Indices 16-Day L3 Globa...
+700    MOD13Q1.005 Vegetation Indices 16-Day Global 2...
+707                                MODIS Aqua Daily NDVI
+712                   MODIS Aqua Daily NDVI [deprecated]
+719    MYD13A1.005 Vegetation Indices 16-Day L3 Globa...
+720    MYD13Q1.005 Vegetation Indices 16-Day Global 2...
+722    AG100: ASTER Global Emissivity Dataset 100-met...
+727       GIMMS NDVI From AVHRR Sensors (3rd Generation)
+768    NOAA CDR AVHRR NDVI: Normalized Difference Veg...
+769    NOAA CDR AVHRR NDVI: Normalized Difference Veg...
+807        VNP13A1: VIIRS Vegetation Indices 16-Day 500m
+811    VNP22Q2: Land Surface Phenology Yearly L3 Glob...
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">search_by_year</span><span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_scroll-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>496    Landsat 5 TM Collection 1 Tier 1 8-Day NDVI Co...
+504    Landsat 5 TM Collection 1 Tier 1 32-Day NDVI C...
+513    Landsat 5 TM Collection 1 Tier 1 Annual NDVI C...
+533       Landsat 5 TM 8-Day NDVI Composite [deprecated]
+541      Landsat 5 TM 32-Day NDVI Composite [deprecated]
+550      Landsat 5 TM Annual NDVI Composite [deprecated]
+727       GIMMS NDVI From AVHRR Sensors (3rd Generation)
+768    NOAA CDR AVHRR NDVI: Normalized Difference Veg...
+769    NOAA CDR AVHRR NDVI: Normalized Difference Veg...
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">search_title</span><span class="p">(</span><span class="s2">&quot;landsat&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_scroll-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">datasets</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>provider</th>
+      <th>title</th>
+      <th>start_date</th>
+      <th>end_date</th>
+      <th>startyear</th>
+      <th>endyear</th>
+      <th>type</th>
+      <th>tags</th>
+      <th>asset_url</th>
+      <th>thumbnail_url</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>496</th>
+      <td>LANDSAT/LT05/C01/T1_8DAY_NDVI</td>
+      <td>Google</td>
+      <td>Landsat 5 TM Collection 1 Tier 1 8-Day NDVI Co...</td>
+      <td>1984-01-01</td>
+      <td>2012-04-30</td>
+      <td>1984</td>
+      <td>2012</td>
+      <td>image_collection</td>
+      <td>[landsat, ndvi, usgs]</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+    <tr>
+      <th>504</th>
+      <td>LANDSAT/LT05/C01/T1_32DAY_NDVI</td>
+      <td>Google</td>
+      <td>Landsat 5 TM Collection 1 Tier 1 32-Day NDVI C...</td>
+      <td>1984-01-01</td>
+      <td>2012-04-06</td>
+      <td>1984</td>
+      <td>2012</td>
+      <td>image_collection</td>
+      <td>[landsat, ndvi, usgs]</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+    <tr>
+      <th>513</th>
+      <td>LANDSAT/LT05/C01/T1_ANNUAL_NDVI</td>
+      <td>Google</td>
+      <td>Landsat 5 TM Collection 1 Tier 1 Annual NDVI C...</td>
+      <td>1984-01-01</td>
+      <td>2012-01-01</td>
+      <td>1984</td>
+      <td>2012</td>
+      <td>image_collection</td>
+      <td>[landsat, ndvi, usgs]</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+    <tr>
+      <th>533</th>
+      <td>LANDSAT/LT5_L1T_8DAY_NDVI</td>
+      <td>USGS</td>
+      <td>Landsat 5 TM 8-Day NDVI Composite [deprecated]</td>
+      <td>1984-01-01</td>
+      <td>2012-04-30</td>
+      <td>1984</td>
+      <td>2012</td>
+      <td>image_collection</td>
+      <td>[landsat, ndvi, usgs]</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+    <tr>
+      <th>541</th>
+      <td>LANDSAT/LT5_L1T_32DAY_NDVI</td>
+      <td>USGS</td>
+      <td>Landsat 5 TM 32-Day NDVI Composite [deprecated]</td>
+      <td>1984-01-01</td>
+      <td>2012-04-06</td>
+      <td>1984</td>
+      <td>2012</td>
+      <td>image_collection</td>
+      <td>[landsat, ndvi, usgs]</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+    <tr>
+      <th>550</th>
+      <td>LANDSAT/LT5_L1T_ANNUAL_NDVI</td>
+      <td>USGS</td>
+      <td>Landsat 5 TM Annual NDVI Composite [deprecated]</td>
+      <td>1984-01-01</td>
+      <td>2012-01-01</td>
+      <td>1984</td>
+      <td>2012</td>
+      <td>image_collection</td>
+      <td>[landsat, ndvi, usgs]</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+      <td>https://developers.google.com/earth-engine/dat...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="zonal_statistics_example.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Notebook Example</p>
+        </div>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Andres Chamorro<br/>
+  
+      &copy; Copyright 2021, World Bank.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
