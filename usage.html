@@ -361,51 +361,9 @@ title="Print to PDF"
 <p><strong>ZonalStats()</strong> is the main class to request temporal and zonal statistics
 using the GEE backend. The object can be initialized with parameters
 specifying data inputs and the type of aggregation.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="gee_zonal.zonalstats.ZonalStats">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gee_zonal.zonalstats.</span></span><span class="sig-name descname"><span class="pre">ZonalStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistic_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ee_dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'original'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temporal_stat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.zonalstats.ZonalStats" title="Permalink to this definition">#</a></dt>
-<dd><p>Python class to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollection or ee.Image) over vector shapes (ee.FeatureCollections).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>target_features</strong> (<em>ee.FeatureCollection</em><em>, </em><em>gpd.GeoDataFrame</em><em>, or </em><em>str path to a shapefile/GeoJSON</em>) – vector features</p></li>
-<li><p><strong>statistic_type</strong> (<em>str - mean</em><em>, </em><em>max</em><em>, </em><em>median</em><em>, </em><em>min</em><em>, </em><em>sum</em><em>, </em><em>stddev</em><em>, </em><em>var</em><em>, </em><em>count</em><em>, </em><em>minmax</em><em>, </em><em>p75</em><em>, </em><em>p25</em><em>, </em><em>p95</em><em>, </em><em>all</em>) – method to aggregate image pixels by zone</p></li>
-<li><p><strong>collection_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>default: None</em>) – ID for Earth Engine dataset</p></li>
-<li><p><strong>ee_dataset</strong> (<em>ee.Image</em><em> or </em><em>ee.ImageCollection</em><em>, </em><em>default: None</em>) – input dataset if no collection ID is provided</p></li>
-<li><p><strong>band</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>default: None</em>) – name of image band to use</p></li>
-<li><p><strong>output_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>default: None</em>) – file name for output statistics if saved to Google Drive</p></li>
-<li><p><strong>output_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>default: None</em>) – directory name for output statistics if saved to Google Drive</p></li>
-<li><p><strong>frequency</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> (</em><em>monthly</em><em>, </em><em>annual</em><em>, or </em><em>original</em><em>)</em><em>, </em><em>default: original</em>) – temporal frequency for aggregation</p></li>
-<li><p><strong>temporal_stat</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> (</em><em>mean</em><em>, </em><em>max</em><em>, </em><em>median</em><em>, </em><em>min</em><em>, </em><em>sum</em><em>)</em><em>, </em><em>default: None</em>) – statistic for temporal aggregation</p></li>
-<li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: 250</em>) – scale for calculation in mts</p></li>
-<li><p><strong>min_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: None</em>) – filter out values lower than treshold</p></li>
-<li><p><strong>mask</strong> (<em>ee.Image</em><em>, </em><em>default: None</em>) – filter out observations where mask is zero</p></li>
-<li><p><strong>tile_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: 1</em>) – tile scale factor for parallel processing</p></li>
-<li><p><strong>start_year</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: None</em>) – specify start year for statistics</p></li>
-<li><p><strong>end_year</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: None</em>) – specify end year for statistics</p></li>
-<li><p><strong>scale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>default: None</em>) – scale factor to multiply ee.Image to get correct units</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 <p>Input target features can be referenced directly as a GEE asset, or can be supplied
 as a <code class="docutils literal notranslate"><span class="pre">geopandas.GeoDataFrame</span></code>, or a path to a shapefile/GeoJSON (will be automatically
 converted to <code class="docutils literal notranslate"><span class="pre">ee.FeatureCollection</span></code>).</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="gee_zonal.zonalstats.ZonalStats.runZonalStats">
-<span class="sig-prename descclassname"><span class="pre">ZonalStats.</span></span><span class="sig-name descname"><span class="pre">runZonalStats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.zonalstats.ZonalStats.runZonalStats" title="Permalink to this definition">#</a></dt>
-<dd><p>Run zonal statistics aggregation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>tabular statistics</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>DataFrame or dict with EE task status if output_name/dir is specified</p>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 <section id="retrieving-output-table">
 <h2>Retrieving output table<a class="headerlink" href="#retrieving-output-table" title="Permalink to this headline">#</a></h2>
@@ -479,43 +437,6 @@ containing a copy of the Earth Engine data catalog.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="py class">
-<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gee_zonal.catalog.</span></span><span class="sig-name descname"><span class="pre">Catalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redownload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog" title="Permalink to this definition">#</a></dt>
-<dd><p>Inventory of Earth Engine public, saved as a DataFrame under datasets variable</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog.search_by_period">
-<span class="sig-name descname"><span class="pre">search_by_period</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog.search_by_period" title="Permalink to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>get all datasets that intersect a time period:</dt><dd><p>start of dataset &lt;= end year
-end of dataset &gt;= start year</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog.search_by_year">
-<span class="sig-name descname"><span class="pre">search_by_year</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog.search_by_year" title="Permalink to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>get all datasets from a particular year:</dt><dd><p>dataset start &lt;= year &lt;= dataset end</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog.search_tags">
-<span class="sig-name descname"><span class="pre">search_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyword</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog.search_tags" title="Permalink to this definition">#</a></dt>
-<dd><p>search for keyword in tags</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gee_zonal.catalog.Catalog.search_title">
-<span class="sig-name descname"><span class="pre">search_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyword</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gee_zonal.catalog.Catalog.search_title" title="Permalink to this definition">#</a></dt>
-<dd><p>search for keyword in title</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 </section>
 </section>
