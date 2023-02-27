@@ -1,134 +1,59 @@
 """
-ZonalStats - Python library with GEE Tools.
+ZonalStats - Calcualte temporal/zonal statistics.
 """
-
-import ee, os, re
+import ee
 from datetime import datetime
 import pandas as pd
 import io
+import sys, os
+from .catalog import Catalog
+from .gee_helpers import gpd_to_gee
 ee.Initialize()
-repo_dir = os.path.dirname(os.path.realpath(__file__)) # if Notebooks could also access thorugh ..
 
-class Catalog(object):
-    '''
-    Inventory of Earth Engine datasets, saved as a pandas DataFrame
-    This is retrieved from https://github.com/samapriya/Earth-Engine-Datasets-List
-    All credit goes to Samapriya Roy!
-    '''
-    def __init__(self, datasets = None, redownload = False):
-        def load_datasets():
-            if redownload == True:
-                datasets = pd.read_csv("https://raw.githubusercontent.com/samapriya/Earth-Engine-Datasets-List/master/gee_catalog.csv")
-                datasets = datasets[['id', 'provider', 'title', 'start_date', 'end_date', 'startyear', 'endyear', 'type', 'tags', 'asset_url', 'thumbnail_url']]
-                datasets.to_csv(os.path.join(repo_dir, "Earth-Engine-Datasets-List/eed_latest.csv"), index=False)
-            else:
-                try:
-                    datasets = pd.read_csv("https://raw.githubusercontent.com/samapriya/Earth-Engine-Datasets-List/master/gee_catalog.csv")
-                except:
-                    datasets = pd.read_csv(os.path.join(repo_dir, "Earth-Engine-Datasets-List/eed_latest.csv"))
-            datasets['tags'] = datasets.tags.apply(lambda x: x.lower())
-            datasets['tags'] = datasets.tags.apply(lambda x: x.split(', '))
-            datasets['start_date'] = pd.to_datetime(datasets.start_date)
-            datasets['end_date'] = pd.to_datetime(datasets.end_date)
-            return datasets
-        self.datasets = load_datasets() if datasets is None else datasets
-        
-    def __str__(self):
-        return self.datasets.title.to_string()
-    
-    def __len__(self):
-        return len(self.datasets)
-        
-    def search_tags(self, keyword):
-        '''
-        search for keyword in tags
-        '''
-        keyword = keyword.lower()
-        search_results = self.datasets.loc[self.datasets.tags.apply(lambda x: keyword in x)]
-        if len(search_results)>0:
-            return Catalog(search_results)
-        else:
-            raise Exception("No hits!")
-        
-    def search_title(self, keyword):
-        '''
-        search for keyword in title
-        '''
-        def search_function(title, keyword):
-            match = re.search(keyword, title, flags=re.IGNORECASE)
-            return True if match else False
-        search_results = self.datasets.loc[self.datasets.title.apply(search_function, args = [keyword])]
-        if len(search_results)>0:
-            return Catalog(search_results)
-        else:
-            raise Exception("No hits!")
-        
-    def search_by_year(self, year):
-        '''
-        get all datasets from a particular year:
-            dataset start <= year <= dataset end
-        '''
-        search_results = self.datasets.loc[(self.datasets.startyear <= year) & (self.datasets.endyear >= year)]
-        if len(search_results)>0:
-            return Catalog(search_results)
-        else:
-            raise Exception("No hits!")
-    
-    def search_by_period(self, start, end):
-        '''
-        get all datasets that intersect a time period:
-            start of dataset <= end year
-            end of dataset >= start year
-        '''
-        search_results = self.datasets.loc[(self.datasets.startyear <= end) & (self.datasets.endyear >= start)]
-        if len(search_results)>0:
-            return Catalog(search_results)
-        else:
-            raise Exception("No hits!")
-        
 class ZonalStats(object):
     """
     Python class to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollection or ee.Image) over vector shapes (ee.FeatureCollections).
     
     :param target_features: vector features
-    :type target_features: ee.FeatureCollection
+    :type target_features: ee.FeatureCollection, gpd.GeoDataFrame, or str path to a shapefile/GeoJSON
     :param statistic_type: method to aggregate image pixels by zone
     :type statistic_type: str - mean, max, median, min, sum, stddev, var, count, minmax, p75, p25, p95, all
     :param collection_id: ID for Earth Engine dataset
-    :type collection_id: str
-    :param ee_dataset: input dataset if no collection ID is provided, defaults to None
-    :type ee_dataset: ee.Image or ee.ImageCollection(, optional)
+    :type collection_id: str, default: None
+    :param ee_dataset: input dataset if no collection ID is provided
+    :type ee_dataset: ee.Image or ee.ImageCollection, default: None
     :param band: name of image band to use
-    :type band: str(, optional)
-    :param output_name: file name for output statistics if saved to Google Drive, defaults to None
-    :type output_name: str
-    :param output_dir: directory name for output statistics if saved to Google Drive, defaults to None
-    :type output_dir: str(, optional)
-    :param frequency: temporal frequency for aggregation, defaults to original frequency
-    :type frequency: str (monthly, annual, or original)(, optional)
-    :param temporal_stat: statistic for temporal aggregation, defaults to None.
-    :type temporal_stat: str (mean, max, median, min, sum)(, optional)
+    :type band: str, default: None
+    :param output_name: file name for output statistics if saved to Google Drive
+    :type output_name: str, default: None
+    :param output_dir: directory name for output statistics if saved to Google Drive
+    :type output_dir: str, default: None
+    :param frequency: temporal frequency for aggregation
+    :type frequency: str (monthly, annual, or original), default: original
+    :param temporal_stat: statistic for temporal aggregation
+    :type temporal_stat: str (mean, max, median, min, sum), default: None
     :param scale: scale for calculation in mts
-    :type scale: int
+    :type scale: int, default: 250
     :param min_threshold: filter out values lower than treshold
-    :type min_threshold: int
+    :type min_threshold: int, default: None
     :param mask: filter out observations where mask is zero
-    :type mask: ee.Image
-    :param tile_scale: tile scale factor for parallel processing, defaults to 1
-    :type tile_scale: int
-    :param start_year: specify start year for stats, defaults to None
-    :type start_year: int
-    :param end_year: specify end year for stats (not inclusive), defaults to None
-    :type end_year: int
-    :param scale_factor: scale factor to multiply ee.Image to get correct units, defaults to None
-    :type scale_factor: int
+    :type mask: ee.Image, default: None
+    :param tile_scale: tile scale factor for parallel processing
+    :type tile_scale: int, default: 1
+    :param start_year: specify start year for statistics
+    :type start_year: int, default: None
+    :param end_year: specify end year for statistics
+    :type end_year: int, default: None
+    :param scale_factor: scale factor to multiply ee.Image to get correct units
+    :type scale_factor: int, default: None
     """
-    def __init__(self, target_features, statistic_type, collection_id, ee_dataset = None, band = None,
-                output_name = None, output_dir = None,
-                frequency = "original", temporal_stat = None,
-                scale = 250, min_threshold = None, mask = None, tile_scale = 1,
+    def __init__(self, target_features, statistic_type, collection_id=None, ee_dataset = None, 
+                band = None, output_name = None, output_dir = None, frequency = "original", 
+                temporal_stat = None, scale = 250, min_threshold = None, mask = None, tile_scale = 1,
                 start_year = None, end_year = None, scale_factor = None):
-        self.collection_id = collection_id if collection_id else None
+        self.collection_id = collection_id
+        if collection_id is None and ee_dataset is None:
+            raise Exception('One of collection_id or ee_dataset must be supplied')
         self.collection_suffix = collection_id[collection_id.rfind("/")+1:] if collection_id else None
         if ee_dataset is None:
             try:
@@ -144,7 +69,7 @@ class ZonalStats(object):
             self.ee_dataset = ee_dataset
         cat = Catalog()
         self.metadata = cat.datasets.loc[cat.datasets.id==collection_id].iloc[0] if collection_id else None
-        self.target_features = target_features
+        self.target_features = target_features if type(target_features)==ee.FeatureCollection else gpd_to_gee(target_features)
         self.statistic_type = statistic_type
         self.frequency = frequency
         self.temporal_stat = temporal_stat
@@ -166,7 +91,7 @@ class ZonalStats(object):
         if start is None:
             years = list(range(self.metadata.startyear, self.metadata.endyear+1, 1))
         else:
-            years = list(range(start, end, 1))
+            years = list(range(start, end+1, 1))
         return ee.List(years)
 
     def ymList(self, start=None, end=None):
@@ -205,7 +130,7 @@ class ZonalStats(object):
         }
         if stat not in allowed_statistics_ts.keys():
             raise Exception(
-                "satistic must be one of be one of {}".format(", ".join(list(allowed_statistics_ts.keys())))
+                "temporal satistic must be one of be one of {}".format(", ".join(list(allowed_statistics_ts.keys())))
                 )
         def aggregate_monthly(ym):
             date = ee.Date.parse("YYYYMM", ym)
@@ -246,6 +171,12 @@ class ZonalStats(object):
         return image.multiply(scale_factor)
     
     def runZonalStats(self):
+        """
+        Run zonal statistics aggregation
+        
+        :return: tabular statistics
+        :rtype: DataFrame or dict with EE task status if output_name/dir is specified
+        """
         if self.frequency not in ['monthly', 'annual', 'original']:
             raise Exception("frequency must be one of annual, monthly, or original")
         if self.frequency == "monthly":
@@ -335,6 +266,7 @@ class ZonalStats(object):
                 fileNamePrefix = self.output_name,
             )
             self.task.start()
+            return(self.task)
         else:
             res = zs.getInfo()
             return(self.get_zonal_res(res))

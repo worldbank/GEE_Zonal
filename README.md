@@ -1,86 +1,112 @@
 # GEE Zonal
 
-This package contains two classes to ease the process of getting statistics from Google Earth Engine datasets.
+This python package provides a wrapper function to request temporal and zonal statistics from Google Earth Engine (GEE) datasets.
 
-The GOST team will use this to build a dataset for the Poverty GP, and we will also use this space to discuss Earth Engine issues and use cases.
+## Summary
+
+A zonal statistics function was created to ease the process of working with the GEE API. The function can work with any raster data loaded to EE (`ee.ImageCollections` or `ee.Image`) and vector features (`geopandas.GeoDataFrame` or `ee.FeatureCollection`), and returns tabular data.
+
+Statistics can be requested at various temporal resolutions (`original` frequency, `monthly`, or `annual`). The workflow conducts pixel-by-pixel temporal aggregations, before summarizing statistics over target features.
+
+Additionaly, the package provides functionality to quickly search the GEE Catalog.
+
+#### [Documentation Pages](https://worldbank.github.io/GEE_Zonal/)
+
+## Installation
+
+The required dependencies are *earthengine-api*, *geopandas*, and *notebook*. The package (and dependencies) can be installed via pip:
+
+```sh
+pip install gee_zonal
+```
+
+## Setup
+
+The Earth Engine Python API needs to be authenticated with a Google account. First, sign up to Google Earth Engine [here](https://earthengine.google.com/signup/). 
+
+Launch a jupyter notebook, and authenticate your account with the ee library.
+
+```python
+import ee
+ee.Authenticate()
+```
+
+You can check that this worked by running `ee.Initialize()`, then import and run the library:
+
+```python
+from gee_zonal import ZonalStats, Catalog
+```
+
+If the pip installation is not working, you can recreate the environment before and install the package from source:
+
+```sh
+conda create -n ee
+conda activate ee
+conda install -c conda-forge earthengine-api geopandas notebook ipykernel​
+git clone https://github.com/worldbank/GEE_Zonal.git
+python setup.py build
+python setup.py install
+python -m ipykernel install --user --name ee --display-name "Earth Engine"
+```
 
 ## Usage
 
-**Catalog()**
+### ZonalStats() 
+
+Main class to calculate temporal and zonal statistics using the GEE backend. The object can be initialized with parameters specifying data inputs and the type of aggregation.
+
+```python
+import ee
+from gee_zonal import ZonalStats
+AOIs = ee.FeatureCollection('<id of ee.FeatureCollection>')
+AOIs = '<path to shapefile>'
+zs = ZonalStats(
+  collection_id = 'LANDSAT/LC08/C01/T1_8DAY_NDVI',
+  target_features = AOIs,
+  statistic_type = "all", # all includes min, max, mean, and stddev
+  frequency = "annual",
+  temporal_stat = "mean"
+)
+```
+
+See docstring for more details on the input parameters for `ZonalStats()` and the [example notebook](./notebooks/Test%20Zonal%20Statistics.ipynb).
+
+The output statistics can be retrieved directly in the notebook (as a `DataFrame`):
+
+```python
+res = zs.runZonalStats()
+```
+
+Or retrieved from Google Drive as a csv table if an `output_name` and `output_dir` were specified.
+
+### Catalog()
 
 Inventory of Earth Engine datasets with some functions to search catalog by tags, title, and year / time period
 
 ```python
-from gee_tools import Catalog
+from gee_zonal import Catalog
 cat = Catalog()
 ```
 
-The catalog contains a *datasets* variable - a pandas Data Frame of the Earth Engine data catalog - retrieved from [Earth-Engine-Datasets-List](https://github.com/samapriya/Earth-Engine-Datasets-List) and also saved in the src folder.
+The catalog object contains a `datasets` variable, a `DataFrame` containing a copy of the Earth Engine data catalog, retrieved from [Earth-Engine-Datasets-List](https://github.com/samapriya/Earth-Engine-Datasets-List).
 
 ```python
 cat.datasets
 ```
 
-*Search functions*
+#### Search functions
 
 ```python
 results = cat.search_tags("ndvi")
 results = results.search_by_period(1985, 2021)
 results = results.search_title("landsat")
+print(results)
 ```
 
-**ZonalStats()**
+## Additional Resources
 
-Object to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollections) over vector shapes (ee.FeatureCollections)
-See [Test Zonal Statistics notebook](./notebooks/Test%20Zonal%20Statistics.ipynb)
-
-```python
-import ee
-from gee_tools import ZonalStats
-ee.Initialize()
-AOIs = ee.FeatureCollection('<id of ee.FeatureCollection>')
-zs = ZonalStats(
-  collection_id = 'LANDSAT/LC08/C01/T1_8DAY_NDVI',
-  target_features = AOIs,
-  statistic_type = "mean",
-  freq = "annual",
-  output_name = "pretty_output",
-  temporal_stat = "mean
-)
-
-```
-
-See docstrings for more details on the input parameters for ZonalStats(). The output statistics can be retrieved directly in the notebook (as a ee.featureCollection / dictionary), or retrieved from Google Drive as a csv table.
-
-## Environment Setup
-
-Currently only depends on *earthengine-api* and *pandas*. In the future we will probably include *geopandas* and *geemap*.
-
-```sh
-conda create -n ee
-conda activate ee
-conda install -c conda-forge earthengine-api
-earthengine authenticate
-conda install -c conda-forge pandas
-pip install ipykernel​
-python -m ipykernel install --user --name ee --display-name "Earth Engine"
-conda install -c conda-forge notebook
-```
-
-Or, using the environment.yml file (hasn't been tested)
-
-```sh
-conda env create -f environment.yml
-conda activate ee
-earthengine authenticate
-```
-
-## Project Checklist
-
-- [ ] Go through variables for Poverty GP dataset
-- [ ] Test downloading files directly from Google Drive to local drive
-- [ ] Add capability to interact with shapefiles/geopandas like geemap
-- [ ] Improve documentation / environment setup
+- [geemap](https://geemap.org/): Python libary with more functionality to work with GEE.
+- [awesome-gee-community-catalog](https://gee-community-catalog.org/): Extended catalog of EE datasets. 
 
 ## License
 
