@@ -39,4 +39,4 @@ notebook = ["notebook>=6.5.2"]
 [project.urls]
 "Homepage" = "https://github.com/worldbank/GEE_Zonal"
 "Bug Reports" = "https://github.com/worldbank/GEE_Zonal/issues"
-"Source" = "https://github.com/worldbank/GEE_Zonal/issues"
+"Source" = "https://github.com/worldbank/GEE_Zonal"
