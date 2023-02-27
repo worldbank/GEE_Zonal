@@ -1,3 +1,42 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=43.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "gee_zonal"
+version = "0.1.0"
+description = "Wrapper function to request temporal and zonal statistics from Google Earth Engine"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {file = "LICENSE.md", content-type = "text/markdown"}
+keywords = ["zonal statistics", "gee", "earth engine"]
+authors = [
+  {name="Development Data Group", email="github@worldbank.org"},
+]
+maintainers = [
+  {name="Andres Chamorro", email="achamorroelizond@worldbank.org"},
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.7",
+	"Programming Language :: Python :: 3.8",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3 :: Only",
+	"Development Status :: 3 - Alpha",
+	"Intended Audience :: Developers",
+	"Operating System :: OS Independent",
+]
+requires-python = ">=3.7"
+dependencies = [
+	"earthengine-api>=0.1.342",
+    "pandas>=1.2.2",
+    "geopandas>=0.12.2",
+]
+[project.optional-dependencies]
+notebook = ["notebook>=6.5.2"]
+
+[project.urls]
+"Homepage" = "https://github.com/worldbank/GEE_Zonal"
+"Bug Reports" = "https://github.com/worldbank/GEE_Zonal/issues"
+"Source" = "https://github.com/worldbank/GEE_Zonal"
