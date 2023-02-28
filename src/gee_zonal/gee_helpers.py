@@ -35,6 +35,8 @@ def gpd_to_gee(inD):
 
 def authenticateGoogleDrive():
     try:
+        from pydrive.drive import GoogleDrive
+        from pydrive.auth import GoogleAuth
         gauth = GoogleAuth()
         drive = GoogleDrive(gauth)
         return drive

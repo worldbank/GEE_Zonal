@@ -1,6 +1,6 @@
 # Configuration file for the Sphinx documentation builder.
 import sys, os
-sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath('../src'))
 
 # mock import these packages because readthedocs doesn't have them installed
 autodoc_mock_imports = [
@@ -45,6 +45,13 @@ templates_path = ['_templates']
 # -- Options for HTML output
 
 html_theme = "sphinx_book_theme" #'sphinx_rtd_theme' sphinx_book_theme
+
+html_theme_options = {
+    "repository_url": "https://github.com/worldbank/GEE_Zonal",
+    "use_repository_button": True,
+    "use_issues_button": True,
+    "use_edit_page_button": True
+}
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'

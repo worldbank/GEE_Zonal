@@ -1,8 +1,8 @@
 # GEE Zonal
 
-![pypi](https://img.shields.io/pypi/v/gee-zonal)
+[![PyPI version](https://badge.fury.io/py/gee-zonal.svg)](https://badge.fury.io/py/gee-zonal)
 ![GitHub issues](https://img.shields.io/github/issues/worldbank/GEE_Zonal?style=plastic)
-![GitHub starts](https://img.shields.io/github/stars/worldbank/GEE_Zonal?style=social)
+![GitHub stars](https://img.shields.io/github/stars/worldbank/GEE_Zonal?style=social)
 
 This python package provides a wrapper function to request temporal and zonal statistics from Google Earth Engine (GEE) datasets.
 
@@ -18,7 +18,7 @@ Additionaly, the package provides functionality to quickly search the GEE Catalo
 
 ## Installation
 
-The required dependencies are *earthengine-api*, *geopandas*, and *notebook*. The package (and dependencies) can be installed via pip:
+The required dependencies are *earthengine-api*, *geopandas*, *geojson*, and *notebook*. The package (and dependencies) can be installed via pip:
 
 ```sh
 pip install gee_zonal

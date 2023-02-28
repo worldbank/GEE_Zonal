@@ -1,6 +1,6 @@
 # GEE Zonal
 
-**GEE Zonal**: This python package provides a wrapper function to request temporal and zonal statistics from Google Earth Engine (GEE) datasets.
+This python package provides a wrapper function to request temporal and zonal statistics from Google Earth Engine (GEE) datasets.
 
 ## Summary
 
@@ -15,7 +15,7 @@ Additionaly, the package provides functionality to quickly search the GEE Catalo
 
 ```{toctree}
 :caption: Documentation
-:maxdepth: 2
+:maxdepth: 1
 
 installation
 usage
@@ -23,7 +23,7 @@ usage
 
 ```{toctree}
 :caption: Examples
-:maxdepth: 2
+:maxdepth: 1
 
 zonal_statistics_example
 catalog_example
