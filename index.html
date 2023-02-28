@@ -179,6 +179,68 @@ title="Fullscreen mode"
 
 </button>
 
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/worldbank/GEE_Zonal"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/worldbank/GEE_Zonal/issues/new?title=Issue%20on%20page%20%2Findex.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/worldbank/GEE_Zonal/edit/master/index.md"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Edit this page"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="headerbtn__text-container">suggest edit</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
 <div class="menu-dropdown menu-dropdown-download-buttons">
   <button class="headerbtn menu-dropdown__trigger"
       aria-label="Download this page">
@@ -291,7 +353,7 @@ title="Print to PDF"
                 
   <section id="gee-zonal">
 <h1>GEE Zonal<a class="headerlink" href="#gee-zonal" title="Permalink to this headline">#</a></h1>
-<p><strong>GEE Zonal</strong>: This python package provides a wrapper function to request temporal and zonal statistics from Google Earth Engine (GEE) datasets.</p>
+<p>This python package provides a wrapper function to request temporal and zonal statistics from Google Earth Engine (GEE) datasets.</p>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">#</a></h2>
 <p>A zonal statistics function was created to ease the process of working with the GEE API. The function can work with any raster data loaded to EE (<code class="docutils literal notranslate"><span class="pre">ee.ImageCollections</span></code> or <code class="docutils literal notranslate"><span class="pre">ee.Image</span></code>) and vector features (<code class="docutils literal notranslate"><span class="pre">geopandas.GeoDataFrame</span></code> or <code class="docutils literal notranslate"><span class="pre">ee.FeatureCollection</span></code>), and returns tabular data.</p>
@@ -304,26 +366,14 @@ title="Print to PDF"
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#setup">Setup</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#creating-a-zonalstats-object">Creating a ZonalStats object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#retrieving-output-table">Retrieving output table</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#searching-the-ee-catalog">Searching the EE catalog</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="zonal_statistics_example.html">Notebook Example</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="zonal_statistics_example.html#input-features">Input Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zonal_statistics_example.html#initialize-zonal-stats">Initialize Zonal Stats</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="zonal_statistics_example.html">Notebook Example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="catalog_example.html">Catalog Example</a></li>
 </ul>
 </div>
