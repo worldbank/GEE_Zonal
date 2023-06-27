@@ -4,6 +4,7 @@ import geopandas as gpd
 import geojson
 from shapely.geometry import Polygon, MultiPolygon
 import warnings
+from os.path import join, expanduser, exists
 
 def gpd_to_gee(inD):
     '''Convert a geopandas GeoDataFrame to EE Feature Collection
@@ -33,13 +34,27 @@ def gpd_to_gee(inD):
     cur_ee = ee.FeatureCollection(all_polys)
     return(cur_ee)
 
-def authenticateGoogleDrive():
+def authenticateGoogleDrive(creds_dir=join(expanduser('~'), '.config', 'creds')):
     try:
         from pydrive.drive import GoogleDrive
         from pydrive.auth import GoogleAuth
         gauth = GoogleAuth()
+        gauth.LoadClientConfigFile(join(creds_dir, 'client_secrets.json'))
+        gauth.LoadCredentialsFile(join(creds_dir, "gdrive_creds.txt"))
+        if gauth.credentials is None:
+            # Authenticate if they're not there
+            gauth.LocalWebserverAuth()
+        elif gauth.access_token_expired:
+            # Refresh them if expired
+            gauth.Refresh()
+        else:
+            # Initialize the saved creds
+            gauth.Authorize()
+        # Save the current credentials to a file
+        gauth.SaveCredentialsFile(join(creds_dir, "gdrive_creds.txt"))
         drive = GoogleDrive(gauth)
         return drive
-    except:
-        print("Google Drive tools are not available")
-
+    except ImportError:
+        print("pydrive is not installed. Install pydrive if you want to use Google Drive functionality")
+    except Exception as e:
+        print(e)

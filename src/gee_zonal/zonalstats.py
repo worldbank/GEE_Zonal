@@ -46,11 +46,13 @@ class ZonalStats(object):
     :type end_year: int, default: None
     :param scale_factor: scale factor to multiply ee.Image to get correct units
     :type scale_factor: int, default: None
+    :param mapped: Boolean to indicate whether to use mapped or non-mapped version of zonal stats
+    :type mapped: bool, default: False
     """
     def __init__(self, target_features, statistic_type, collection_id=None, ee_dataset = None, 
                 band = None, output_name = None, output_dir = None, frequency = "original", 
                 temporal_stat = None, scale = 250, min_threshold = None, mask = None, tile_scale = 1,
-                start_year = None, end_year = None, scale_factor = None):
+                start_year = None, end_year = None, scale_factor = None, mapped = False):
         self.collection_id = collection_id
         if collection_id is None and ee_dataset is None:
             raise Exception('One of collection_id or ee_dataset must be supplied')
@@ -83,6 +85,7 @@ class ZonalStats(object):
         self.tile_scale = tile_scale
         self.start_year = start_year
         self.end_year = end_year
+        self.mapped = mapped
 
     def yList(self, start=None, end=None):
         '''
@@ -250,13 +253,26 @@ class ZonalStats(object):
                         )
             reducer_list = [allowed_statistics[stat_type] for stat_type in self.statistic_type]
             reducer = combine_reducers(reducer_list)
-                
-        zs = ee.Image(byTimesteps).reduceRegions(
-            collection = self.target_features, 
-            reducer = reducer,
-            scale = self.scale,
-            tileScale = self.tile_scale
-        )
+        
+        if self.mapped == True:
+            def zs_func(feature):
+                zs_result = byTimesteps.reduceRegion(
+                    reducer = reducer,
+                    geometry = feature.geometry(),
+                    scale = self.scale,
+                    maxPixels = 10e15, #1e13
+                    tileScale = self.tile_scale
+                    )
+                feature = feature.set(zs_result)
+                return feature
+            zs = self.target_features.map(zs_func) #.getInfo()
+        else:
+            zs = ee.Image(byTimesteps).reduceRegions(
+                collection = self.target_features, 
+                reducer = reducer,
+                scale = self.scale,
+                tileScale = self.tile_scale
+            )
         if self.output_dir is not None and self.output_name is not None:
             self.task = ee.batch.Export.table.toDrive(
                 collection = zs,
@@ -266,7 +282,7 @@ class ZonalStats(object):
                 fileNamePrefix = self.output_name,
             )
             self.task.start()
-            return(self.task)
+            # return(self)
         else:
             res = zs.getInfo()
             return(self.get_zonal_res(res))
@@ -308,5 +324,5 @@ class ZonalStats(object):
         export_file = drive.ListFile({'q': f"'{folder_id}' in parents and trashed=false and title contains '{self.output_name}'"}).GetList()[0]
         s = export_file.GetContentString()
         c = pd.read_csv(io.StringIO(s))
-        c.drop('.geo', axis=1, inplace=True)
+        c.drop(['.geo', 'system:index'], axis=1, inplace=True)
         return c

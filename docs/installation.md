@@ -26,7 +26,13 @@ You can check that this worked by running `ee.Initialize()`, then import and run
 from gee_zonal import ZonalStats, Catalog
 ```
 
-If the pip installation is not working, you can recreate the environment before and install the package from source:
+If the pip installation is not working, you can install the package from source:
+
+```sh
+pip install git+https://github.com/worldbank/GEE_Zonal.git
+```
+
+Or, recreate the environment:
 
 ```sh
 conda create -n ee

@@ -18,7 +18,7 @@ copyright = '2021, World Bank'
 author = 'Andres Chamorro'
 
 release = '1.0'
-version = '0.1.0'
+version = '0.2.0'
 html_title = f"GEE Zonal {release}"
 
 # -- General configuration

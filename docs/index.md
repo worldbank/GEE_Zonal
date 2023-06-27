@@ -19,6 +19,7 @@ Additionaly, the package provides functionality to quickly search the GEE Catalo
 
 installation
 usage
+pydrive
 ```
 
 ```{toctree}
