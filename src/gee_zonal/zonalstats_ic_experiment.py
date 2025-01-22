@@ -203,7 +203,7 @@ class ZonalStats(object):
                 byTimesteps = self.ee_dataset.toBands()
         else:
             byTimesteps = self.temporalStack(timesteps, self.frequency, self.temporal_stat)
-            byTimesteps = byTimesteps.toBands()
+            # byTimesteps = byTimesteps.toBands()
         
         # pre-processing
         if self.mask is not None:
@@ -214,7 +214,7 @@ class ZonalStats(object):
         if self.min_threshold is not None:
             byTimesteps = self.applyMinThreshold(byTimesteps, self.min_threshold)
         if self.scale_factor is not None:
-            byTimesteps = self.applyScaleFactor(byTimesteps)
+            byTimesteps = self.applyScaleFactorIC(byTimesteps, self.scale_factor)
         
         allowed_statistics = {
             "count": ee.Reducer.frequencyHistogram().unweighted(),
