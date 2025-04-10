@@ -8,46 +8,50 @@ import io
 import sys, os
 from .catalog import Catalog
 from .gee_helpers import gpd_to_gee
-ee.Initialize()
+try:
+    ee.Initialize()
+except:
+    ee.Authenticate()
+    ee.Initialize()
 
 class ZonalStats(object):
     """
     Python class to calculate zonal and temporal statistics from Earth Engine datasets (ee.ImageCollection or ee.Image) over vector shapes (ee.FeatureCollections).
     
     :param target_features: vector features
-    :type target_features: ee.FeatureCollection, gpd.GeoDataFrame, or str path to a shapefile/GeoJSON
+    :type target_features: ee.FeatureCollection or gpd.GeoDataFrame or str (path to a shapefile/GeoJSON)
     :param statistic_type: method to aggregate image pixels by zone
-    :type statistic_type: str - mean, max, median, min, sum, stddev, var, count, minmax, p75, p25, p95, all
+    :type statistic_type: str (mean, max, median, min, sum, stddev, var, count, minmax, p75, p25, p95, all)
     :param collection_id: ID for Earth Engine dataset
-    :type collection_id: str, default: None
+    :type collection_id: str
     :param ee_dataset: input dataset if no collection ID is provided
-    :type ee_dataset: ee.Image or ee.ImageCollection, default: None
+    :type ee_dataset: ee.Image or ee.ImageCollection
     :param band: name of image band to use
-    :type band: str, default: None
+    :type band: str
     :param output_name: file name for output statistics if saved to Google Drive
-    :type output_name: str, default: None
+    :type output_name: str
     :param output_dir: directory name for output statistics if saved to Google Drive
-    :type output_dir: str, default: None
+    :type output_dir: str
     :param frequency: temporal frequency for aggregation
-    :type frequency: str (monthly, annual, or original), default: original
+    :type frequency: str (monthly or annual or original)
     :param temporal_stat: statistic for temporal aggregation
-    :type temporal_stat: str (mean, max, median, min, sum), default: None
+    :type temporal_stat: str (mean, max, median, min, sum)
     :param scale: scale for calculation in mts
-    :type scale: int, default: 250
-    :param min_threshold: filter out values lower than treshold
-    :type min_threshold: int, default: None
+    :type scale: int
+    :param min_threshold: filter out values lower than threshold
+    :type min_threshold: int
     :param mask: filter out observations where mask is zero
-    :type mask: ee.Image, default: None
+    :type mask: ee.Image
     :param tile_scale: tile scale factor for parallel processing
-    :type tile_scale: int, default: 1
+    :type tile_scale: int
     :param start_year: specify start year for statistics
-    :type start_year: int, default: None
+    :type start_year: int
     :param end_year: specify end year for statistics
-    :type end_year: int, default: None
+    :type end_year: int
     :param scale_factor: scale factor to multiply ee.Image to get correct units
-    :type scale_factor: int, default: None
+    :type scale_factor: int
     :param mapped: Boolean to indicate whether to use mapped or non-mapped version of zonal stats
-    :type mapped: bool, default: False
+    :type mapped: bool
     """
     def __init__(self, target_features, statistic_type, collection_id=None, ee_dataset = None, 
                 band = None, output_name = None, output_dir = None, frequency = "original", 

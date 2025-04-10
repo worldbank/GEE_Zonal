@@ -6,6 +6,10 @@ The required dependencies are *earthengine-api*, *geopandas*, *geojson*, and *no
 pip install gee_zonal
 ```
 
+This is the preferred method to install geodev, as it will always install the most recent stable release.
+
+If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide you through the process.
+
 ## Setup
 
 The Earth Engine Python API needs to be authenticated with a Google account. First, sign up to Google Earth Engine [here](https://earthengine.google.com/signup/). 
@@ -30,16 +34,4 @@ If the pip installation is not working, you can install the package from source:
 
 ```sh
 pip install git+https://github.com/worldbank/GEE_Zonal.git
-```
-
-Or, recreate the environment:
-
-```sh
-conda create -n ee
-conda activate ee
-conda install -c conda-forge earthengine-api geopandas geojson notebook ipykernel​
-git clone https://github.com/worldbank/GEE_Zonal.git
-python setup.py build
-python setup.py install
-python -m ipykernel install --user --name ee --display-name "Earth Engine"
 ```
