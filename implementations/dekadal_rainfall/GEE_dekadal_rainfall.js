@@ -22,7 +22,7 @@ var dekadalCHIRPS =  ee.FeatureCollection(
               });
             var valMean = ee.Number(mean.get(bandName));
             valMean = ee.Number(valMean).multiply(100).round().divide(100) //keep only 2 decimals
-          
+
           return ee.Feature(null, {
               'uid' : ee.String(feature.get('pcode')).cat('-').cat(ee.String(id)),
               'pcode' : feature.get('pcode'),
@@ -30,7 +30,7 @@ var dekadalCHIRPS =  ee.FeatureCollection(
               'dekad': id,
           });
       }))
-    
+
   })
 ).flatten();
 

@@ -10,7 +10,8 @@ A zonal statistics function was created to ease the process of working with the 
 
 Statistics can be requested at various temporal resolutions (`original` frequency, `monthly`, or `annual`). The workflow conducts pixel-by-pixel temporal aggregations, before summarizing statistics over target features.
 
-Additionaly, the package provides functionality to quickly search the GEE Catalog.
+Additionally, the package provides functionality to quickly search the GEE Catalog.
 
-```{note} This project is under active development.
-```
+!!! note
+
+    This project is under active development. Feel free to open a new issue or a discussion if you have any questions or suggestions.

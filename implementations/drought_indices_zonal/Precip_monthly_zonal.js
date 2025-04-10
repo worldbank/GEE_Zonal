@@ -1,9 +1,9 @@
 var table = ee.FeatureCollection("users/jbelanger/alcs_ielfs_areas/ALCS19_Filled");
 
-// based on Leo Martine's code 
+// based on Leo Martine's code
 
-// create feature collection to calculate zonal stats 
-Map.setOptions('SATELLITE'); 
+// create feature collection to calculate zonal stats
+Map.setOptions('SATELLITE');
 var shown = true;
 var opacity = 0.5;
 Map.addLayer(table16, {color:'C20707'}, "aoi", shown, opacity);
@@ -12,7 +12,7 @@ Map.centerObject(table16, 9);
 function getCols(tableMetadata) {
   print(tableMetadata.columns);
 }
-print(table16.limit(0).evaluate(getCols)); 
+print(table16.limit(0).evaluate(getCols));
 
 //var points = ee.FeatureCollection.randomPoints(region, points, seed, maxError)
 
@@ -35,9 +35,9 @@ Map.addLayer(CHIRPS.first());
 var bandname = 'precipitation';
 
 // set analysis start time (enter first day of start month and last day of end month)
-var startDate = ee.Date('2006-09-01'); 
+var startDate = ee.Date('2006-09-01');
 // set analysis end time
-var endDate = ee.Date('2020-09-30'); 
+var endDate = ee.Date('2020-09-30');
 
 // calculate the number of months to process
 var nMonths = ee.Number(endDate.difference(startDate,'month')).round();
@@ -66,7 +66,7 @@ var monthlyCHIRPS =  ee.FeatureCollection(
           var valMean = ee.List([ee.Number(mean.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           //valMean = ee.Number(ee.Algorithms.If(valMean,valMean,-999));
           valMean = ee.Number(valMean).multiply(1000).round().divide(1000); //keep only 3 decimals
-          
+
           //min
           var min = filteredImage.reduceRegion({
                   reducer: ee.Reducer.min(),
@@ -77,7 +77,7 @@ var monthlyCHIRPS =  ee.FeatureCollection(
           var valMin = ee.List([ee.Number(min.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           //valMin = ee.Number(ee.Algorithms.If(valMin,valMin,-999));
           valMin = ee.Number(valMin).multiply(1000).round().divide(1000) //keep only 3 decimals
-          
+
           //max
           var max = filteredImage.reduceRegion({
                   reducer: ee.Reducer.max(),
@@ -88,7 +88,7 @@ var monthlyCHIRPS =  ee.FeatureCollection(
           var valMax = ee.List([ee.Number(max.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
          // valMax = ee.Number(ee.Algorithms.If(valMax,valMax,-999));
          valMax = ee.Number(valMax).multiply(1000).round().divide(1000) //keep only 3 decimals
-          
+
           //stdDev
           var stdDev = filteredImage.reduceRegion({
                   reducer: ee.Reducer.stdDev(),
@@ -99,7 +99,7 @@ var monthlyCHIRPS =  ee.FeatureCollection(
           var valstdDev = ee.List([ee.Number(stdDev.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           //valstdDev = ee.Number(ee.Algorithms.If(valstdDev,valstdDev,-999));
           valstdDev = ee.Number(valstdDev).multiply(1000).round().divide(1000) //keep only 3 decimals
-          
+
           return ee.Feature(null, {
               'uid' : ee.String(feature.get('HH_ID')).cat('-').cat(ee.String(monList.get(n))),
               'BAD' : feature.get('BAD'),
@@ -118,7 +118,7 @@ var monthlyCHIRPS =  ee.FeatureCollection(
               'date': monList.get(n),
           });
       }));
-    
+
   })
 ).flatten();
 

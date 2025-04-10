@@ -2,7 +2,7 @@
 
 The required dependencies are *earthengine-api*, *geopandas*, *geojson*, and *notebook*. The package (and dependencies) can be installed via pip:
 
-```sh
+``` sh
 pip install gee_zonal
 ```
 
@@ -12,17 +12,18 @@ If you don't have [pip](https://pip.pypa.io) installed, this [Python installatio
 
 ## Setup
 
-The Earth Engine Python API needs to be authenticated with a Google account. First, sign up to Google Earth Engine [here](https://earthengine.google.com/signup/). 
+The Earth Engine Python API needs to be authenticated with a Google account. First, sign up to Google Earth Engine [here](https://earthengine.google.com/signup/). You will also need to create a Google Cloud Project.
 
-Launch a jupyter notebook, and authenticate your account with the ee library.
+Launch a jupyter notebook, and authenticate your account with the ee library. You will be able to create a project after running the authenticate command, detailed instructions are available [here](https://book.geemap.org/chapters/01_introduction.html#earth-engine-authentication)
 
-```python
+``` python
 import ee
 ee.Authenticate()
 ```
 
-```{note} Authenticating from within a terminal can lead to issues with gcloud.
-```
+!!! note
+
+    Authenticating from within a terminal can lead to issues with gcloud.
 
 You can check that this worked by running `ee.Initialize()`, then import and run the library:
 
@@ -32,6 +33,6 @@ from gee_zonal import ZonalStats, Catalog
 
 If the pip installation is not working, you can install the package from source:
 
-```sh
+``` sh
 pip install git+https://github.com/worldbank/GEE_Zonal.git
 ```

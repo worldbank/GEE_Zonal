@@ -27,7 +27,7 @@ from gee_zonal import ZonalStats
 AOIs = ee.FeatureCollection('users/afche18/Ethiopia_AOI') # ID of ee.FeatureCollection
 zs = ZonalStats(
     collection_id = 'LANDSAT/LC08/C01/T1_8DAY_NDVI',
-    target_features = AOIs, 
+    target_features = AOIs,
     statistic_type = "all", # all includes min, max, mean, and stddev
     frequency = "annual",
     temporal_stat = "mean"
@@ -46,8 +46,8 @@ This option is recommended to run statistics for big areas or for a high number 
 import ee
 from gee_tools import ZonalStats
 zs = ZonalStats(
-    collection_id='UCSB-CHG/CHIRPS/PENTAD', 
-    target_features=AOIs, 
+    collection_id='UCSB-CHG/CHIRPS/PENTAD',
+    target_features=AOIs,
     statistic_type="mean",
     temporal_stat="sum",
     frequency="annual",
@@ -68,7 +68,7 @@ zs.reportRunTime()
 
 ## Searching the EE catalog
 
-The `Earth Engine Data Catalog <https://developers.google.com/earth-engine/datasets>` is an archive of public datasets available via Google Earth Engine.  
+The `Earth Engine Data Catalog <https://developers.google.com/earth-engine/datasets>` is an archive of public datasets available via Google Earth Engine.
 The **Catalog()** class provides a quick way to search for datasets by tags, title, and year / time period.
 
 ### Initialize Catalog Object

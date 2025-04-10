@@ -6,7 +6,7 @@ The `ZonalStats` object contains a function `getZonalStats()` to retrieve the re
 
 This requires additional configuration to provide access to Google Drive. First, the *pydrive* package needs to be installed.
 
-```sh
+``` sh
 pip install pydrive
 ```
 
@@ -20,17 +20,17 @@ Place the `client_secrets.json` file in a folder such that the `authenticateGoog
 
 ## Usage
 
-```python
+``` python
 from gee_zonal import authenticateGoogleDrive
 from os.path.import join
 
 # Authorize Google Drive
-drive = authenticateGoogleDrive(creds_dir = join(expanduser('~'), '.config', 'creds') # Change to path where you stored client_secrets file
+drive = authenticateGoogleDrive(creds_dir = join(expanduser('~'), '.config', 'creds')) # Change to path where you stored client_secrets file
 
 # Run ZonalStats
 zs = ZonalStats(
-    collection_id='UCSB-CHG/CHIRPS/PENTAD', 
-    target_features=AOIs, 
+    collection_id='UCSB-CHG/CHIRPS/PENTAD',
+    target_features=AOIs,
     statistic_type="mean",
     temporal_stat="sum",
     frequency="annual",

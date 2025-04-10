@@ -1,10 +1,10 @@
 var modis = ee.ImageCollection("MODIS/006/MOD13Q1"),
     table = ee.FeatureCollection("users/jbelanger/IELFS_HH_buff_clean");
-    
-// export takes 22 min to 6 hours 
 
-// create feature collection to calculate zonal stats 
-Map.setOptions('SATELLITE'); 
+// export takes 22 min to 6 hours
+
+// create feature collection to calculate zonal stats
+Map.setOptions('SATELLITE');
 var shown = true;
 var opacity = 0.5;
 Map.addLayer(table, {color:'C20707'}, "aoi", shown, opacity);
@@ -13,7 +13,7 @@ Map.centerObject(table, 9);
 function getCols(tableMetadata) {
   print(tableMetadata.columns);
 }
-print(table.limit(0).evaluate(getCols)); 
+print(table.limit(0).evaluate(getCols));
 
 //var points = ee.FeatureCollection.randomPoints(region, points, seed, maxError)
 
@@ -29,10 +29,10 @@ var CHIRPSvis = {
   max: 17.0,
   palette: ['001137', '0aab1e', 'e7eb05', 'ff4a2d', 'e90000'],
 };
-    
+
 //========================================================================================================================
 
-// import modis and filter by bounds 
+// import modis and filter by bounds
 //get the CHIRPS and filtered with bounds
 var CHIRPS = ee.ImageCollection("UCSB-CHG/CHIRPS/DAILY").filterBounds(bounds);
 //Map.addLayer(CHIRPS.first(), CHIRPSvis, '');
@@ -78,7 +78,7 @@ var janstat = table.map(function(feature) {
       image.reduceRegion({
         reducer: reducers,
         geometry: feature.geometry(),
-        scale: 1000, 
+        scale: 1000,
         bestEffort: true
       })).copyProperties(feature).copyProperties(image);
   });
@@ -265,7 +265,7 @@ var decstat = table.map(function(feature) {
 print(decstat.first());
 
 
-/// export all data 
+/// export all data
 
 //Export the data to a CSV
 Export.table.toDrive({
@@ -355,7 +355,7 @@ Export.table.toDrive({
   'precipitation_mean_median','precipitation_mean_min','precipitation_mean_stdDev']
 })
 
-//Export the data to a CSV 
+//Export the data to a CSV
 Export.table.toDrive({
   collection:sepstat,
   folder: 'AF_Drought',
