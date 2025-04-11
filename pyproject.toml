@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gee_zonal"
-version = "0.1.0"
+version = "0.1.1"
 description = "Wrapper function to request temporal and zonal statistics from Google Earth Engine"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = {file = "LICENSE.md", content-type = "text/markdown"}
@@ -42,7 +42,7 @@ notebook = ["notebook>=6.5.2"]
 "Source" = "https://github.com/worldbank/GEE_Zonal"
 
 [tool.bumpversion]
-current_version = "0.1.0"
+current_version = "0.1.1"
 commit = true
 tag = true
 
