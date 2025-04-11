@@ -1,5 +1,5 @@
 site_name: GEE Zonal
-site_description: Short description!!!
+site_description: Wrapper function to request temporal and zonal statistics from Google Earth Engine
 site_author: andresfchamorro
 site_url: https://worldbank.github.io/GEE_Zonal
 repo_url: https://github.com/worldbank/GEE_Zonal
@@ -84,3 +84,4 @@ nav:
     - Examples:
         - examples/zonal_statistics_example.ipynb
         - examples/catalog_example.ipynb
+        - examples/get_results_from_google_drive.ipynb
