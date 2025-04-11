@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://worldbank.github.io/GEE_Zonal/</loc>
+         <lastmod>2025-04-11</lastmod>
+    </url>
+    <url>
+         <loc>https://worldbank.github.io/GEE_Zonal/installation/</loc>
+         <lastmod>2025-04-11</lastmod>
+    </url>
+    <url>
+         <loc>https://worldbank.github.io/GEE_Zonal/pydrive/</loc>
+         <lastmod>2025-04-11</lastmod>
+    </url>
+    <url>
+         <loc>https://worldbank.github.io/GEE_Zonal/usage/</loc>
+         <lastmod>2025-04-11</lastmod>
+    </url>
+    <url>
+         <loc>https://worldbank.github.io/GEE_Zonal/examples/catalog_example/</loc>
+         <lastmod>2025-04-11</lastmod>
+    </url>
+    <url>
+         <loc>https://worldbank.github.io/GEE_Zonal/examples/zonal_statistics_example/</loc>
+         <lastmod>2025-04-11</lastmod>
+    </url>
+</urlset>
