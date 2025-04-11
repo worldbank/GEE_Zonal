@@ -1,10 +1,10 @@
 var modis = ee.ImageCollection("MODIS/006/MOD13Q1"),
     table = ee.FeatureCollection("users/jbelanger/IELFS_HH_buff_clean");
-  
+
 // takes ~50 min to 9hr to export (depends on server usage)
 
-// create feature collection to calculate zonal stats 
-Map.setOptions('SATELLITE');  
+// create feature collection to calculate zonal stats
+Map.setOptions('SATELLITE');
 var shown = true;
 var opacity = 0.5;
 var table = ee.FeatureCollection(table);
@@ -13,7 +13,7 @@ Map.centerObject(table, 9);
 
 // set map viz parameters
 var red = {color: 'red', fillColor: '00000000'};
-var blue = {color: 'blue', fillColor: '0000FF'}; 
+var blue = {color: 'blue', fillColor: '0000FF'};
 
 //bounds of the reference layer
 var bounds = table.geometry().bounds()
@@ -27,10 +27,10 @@ var NDVIvis = {
     '012E01', '011D01', '011301'
   ],
 };
-    
+
 //========================================================================================================================
 
-// import modis and filter by bounds 
+// import modis and filter by bounds
 var modis = ee.ImageCollection("MODIS/006/MOD13Q1").filterBounds(bounds);
 var bandname = 'NDVI'
 
@@ -73,7 +73,7 @@ var janstat = table.map(function(feature) {
       image.reduceRegion({
         reducer: reducers,
         geometry: feature.geometry(),
-        scale: 1000, 
+        scale: 1000,
         bestEffort: true
       })).copyProperties(feature).copyProperties(image);
   });
@@ -260,7 +260,7 @@ var decstat = table.map(function(feature) {
 print(decstat.first());
 
 
-/// export all data 
+/// export all data
 
 //Export the data to a CSV
 Export.table.toDrive({
@@ -351,7 +351,7 @@ Export.table.toDrive({
   'NDVI_mean_median','NDVI_mean_min','NDVI_mean_stdDev']
 })
 
-//Export the data to a CSV 
+//Export the data to a CSV
 Export.table.toDrive({
   collection:sepstat,
   folder: 'AF_Drought',

@@ -1,9 +1,9 @@
 var table = ee.FeatureCollection("users/jbelanger/IELFS_HH_buff");
 
 // based on Leo Martine's code
- 
-// create feature collection to calculate zonal stats 
-Map.setOptions('SATELLITE');  
+
+// create feature collection to calculate zonal stats
+Map.setOptions('SATELLITE');
 var shown = true;
 var opacity = 0.5;
 var table = ee.FeatureCollection(table);
@@ -19,7 +19,7 @@ var bounds = ee.FeatureCollection(table).geometry().bounds()
 
 //========================================================================================================================
 
-// import modis and filter by bounds 
+// import modis and filter by bounds
 // terra 250m
 var modis = ee.ImageCollection("MODIS/006/MOD11A1").filterBounds(bounds);
 var bandname = 'LST_Day_1km'
@@ -33,9 +33,9 @@ print('//-----------------[ Get Monthly Statistics ]-----------------------//');
 var LandSurfaceTemp = modis
 
 // set analysis start time (enter first day of start month and last day of end month)
-var startDate = ee.Date('2006-09-01'); 
+var startDate = ee.Date('2006-09-01');
 // set analysis end time
-var endDate = ee.Date('2020-09-30'); 
+var endDate = ee.Date('2020-09-30');
 
 // calculate the number of months to process
 var nMonths = ee.Number(endDate.difference(startDate,'month')).round();
@@ -64,7 +64,7 @@ var monthlyLandSurfaceTemp =  ee.FeatureCollection(
           // var valMean = ee.Number(mean.get(bandname));
           var valMean = ee.List([ee.Number(mean.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           valMean = ee.Number(valMean).multiply(0.02).subtract(273.15).multiply(1000).round().divide(1000) //keep only 3 decimals and convert to Celcius
-          
+
           //min
           var min = filteredImage.reduceRegion({
                   reducer: ee.Reducer.min(),
@@ -75,7 +75,7 @@ var monthlyLandSurfaceTemp =  ee.FeatureCollection(
           // var valMin = ee.Number(min.get(bandname));
           var valMin = ee.List([ee.Number(min.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           valMin = ee.Number(valMin).multiply(0.02).subtract(273.15).multiply(1000).round().divide(1000) //keep only 3 decimals and convert to Celcius
-          
+
           //max
           var max = filteredImage.reduceRegion({
                   reducer: ee.Reducer.max(),
@@ -86,7 +86,7 @@ var monthlyLandSurfaceTemp =  ee.FeatureCollection(
           // var valMax = ee.Number(max.get(bandname));
           var valMax = ee.List([ee.Number(max.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           valMax = ee.Number(valMax).multiply(0.02).subtract(273.15).multiply(1000).round().divide(1000) //keep only 3 decimals and convert to Celcius
-          
+
           //stdDev
           var stdDev = filteredImage.reduceRegion({
                   reducer: ee.Reducer.stdDev(),
@@ -97,7 +97,7 @@ var monthlyLandSurfaceTemp =  ee.FeatureCollection(
           // var valstdDev = ee.Number(stdDev.get(bandname));
           var valstdDev = ee.List([ee.Number(stdDev.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           valstdDev = ee.Number(valstdDev).multiply(0.02).subtract(273.15).multiply(1000).round().divide(1000) //keep only 3 decimals and convert to Celcius
-          
+
           return ee.Feature(null, {
               'uid' : ee.String(feature.get('HH_ID')).cat('-').cat(ee.String(monList.get(n))),
               'BAD' : feature.get('BAD'),
@@ -116,7 +116,7 @@ var monthlyLandSurfaceTemp =  ee.FeatureCollection(
               'date': monList.get(n),
           });
       }))
-    
+
   })
 ).flatten();
 

@@ -1,6 +1,6 @@
 # Annual Nighttime Lights composite
 
-GEE Javascript script to create an annual composite of Nighttime lights. Output as image to Google Drive. 
+GEE Javascript script to create an annual composite of Nighttime lights. Output as image to Google Drive.
 
 Timeframe: 2020
 
@@ -9,9 +9,9 @@ Timeframe: 2020
 ```javascript
 var ntl = ee.ImageCollection("NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG"),
     table = ee.FeatureCollection("users/jbelanger/badghis_prov_2020");
- 
-// create feature collection to calculate zonal stats 
-Map.setOptions('SATELLITE'); 
+
+// create feature collection to calculate zonal stats
+Map.setOptions('SATELLITE');
 var shown = true;
 var opacity = 0.5;
 var table = ee.FeatureCollection(table);
@@ -41,7 +41,7 @@ var ntl_filter = ntl.filterBounds(bbox)
 
 print("ntl collection size:", ntl_filter.size());
 
-//----------------- NTL: add MOY band -----------------------// 
+//----------------- NTL: add MOY band -----------------------//
 print('//----------------- NTL: add MOY band -----------------------//');
 
 // create date band (month of year) for each image in collection

@@ -8,9 +8,9 @@ var ERA5_Daily = ee.ImageCollection("ECMWF/ERA5/DAILY").filterBounds(bounds);
 var bandName = 'mean_2m_air_temperature'
 
 // set analysis start time
-var startDate = ee.Date('1980-01-01'); 
+var startDate = ee.Date('1980-01-01');
 // set analysis end time (not inclusive so set 1 day after expected enddate)
-var endDate = ee.Date('2020-06-30'); 
+var endDate = ee.Date('2020-06-30');
 
 // calculate the number of days to process
 var nDays = ee.Number(endDate.difference(startDate,'day')).round();
@@ -39,7 +39,7 @@ var dailyTemp =  ee.FeatureCollection(
             var valMean = ee.Number(mean.get(bandName));
             valMean = ee.Number(ee.Algorithms.If(valMean,valMean,-999));
             valMean = ee.Number(valMean).subtract(273.15).multiply(1000).round().divide(1000) //convert to celsius and 3 decimals
-            
+
             //min
             var min = filteredImage.reduceRegion({
                     reducer: ee.Reducer.min(),
@@ -50,7 +50,7 @@ var dailyTemp =  ee.FeatureCollection(
             var valMin = ee.Number(min.get(bandName));
             valMin = ee.Number(ee.Algorithms.If(valMin,valMin,-999));
             valMin = ee.Number(valMin).subtract(273.15).multiply(1000).round().divide(1000) //convert to celsius and 3 decimals
-            
+
             //max
             var max = filteredImage.reduceRegion({
                     reducer: ee.Reducer.max(),
@@ -61,7 +61,7 @@ var dailyTemp =  ee.FeatureCollection(
             var valMax = ee.Number(max.get(bandName));
             valMax = ee.Number(ee.Algorithms.If(valMax,valMax,-999));
             valMax = ee.Number(valMax).subtract(273.15).multiply(1000).round().divide(1000) //convert to celsius and 3 decimals
-            
+
             //stdDev
             var stdDev = filteredImage.reduceRegion({
                     reducer: ee.Reducer.stdDev(),
@@ -72,7 +72,7 @@ var dailyTemp =  ee.FeatureCollection(
             var valstdDev = ee.Number(stdDev.get(bandName));
             valstdDev = ee.Number(ee.Algorithms.If(valstdDev,valstdDev,-999));
             valstdDev = ee.Number(valstdDev).multiply(1000).round().divide(1000) //convert to celsius and 3 decimals
-            
+
             return ee.Feature(null, {
                 'uid' : ee.String(feature.get('pcode')).cat('-').cat(ee.String(dayList.get(n))),
                 'pcode' : feature.get('pcode'),

@@ -3,8 +3,8 @@ var imageCollection = ee.ImageCollection("MODIS/006/MOD13Q1"),
 
 // based on Leo Martine's code
 
-// create feature collection to calculate zonal stats 
-Map.setOptions('SATELLITE'); 
+// create feature collection to calculate zonal stats
+Map.setOptions('SATELLITE');
 var shown = true;
 var opacity = 0.5;
 Map.addLayer(table, {color:'C20707'}, "aoi", shown, opacity);
@@ -26,9 +26,9 @@ var NDVI = ee.ImageCollection("MODIS/006/MOD13Q1").filterBounds(bounds);
 var bandname = 'NDVI';
 
 // set analysis start time (enter first day of start month and last day of end month)
-var startDate = ee.Date('2006-09-01'); 
+var startDate = ee.Date('2006-09-01');
 // set analysis end time
-var endDate = ee.Date('2020-09-30'); 
+var endDate = ee.Date('2020-09-30');
 
 // calculate the number of months to process
 var nMonths = ee.Number(endDate.difference(startDate,'month')).round();
@@ -56,7 +56,7 @@ var monthlyNDVI =  ee.FeatureCollection(
               });
           var valMean = ee.List([ee.Number(mean.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           //valMean = ee.Number(valMean).multiply(0.02).subtract(273.15).multiply(1000).round().divide(1000); //keep only 3 decimals and convert to Celcius
-          
+
           //min
           var min = filteredImage.reduceRegion({
                   reducer: ee.Reducer.min(),
@@ -66,7 +66,7 @@ var monthlyNDVI =  ee.FeatureCollection(
               });
           var valMin = ee.List([ee.Number(min.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           ///valMin = ee.Number(valMin).multiply(0.02).subtract(273.15).multiply(1000).round().divide(1000); //keep only 3 decimals and convert to Celcius
-          
+
           //max
           var max = filteredImage.reduceRegion({
                   reducer: ee.Reducer.max(),
@@ -76,7 +76,7 @@ var monthlyNDVI =  ee.FeatureCollection(
               });
           var valMax = ee.List([ee.Number(max.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
           //valMax = ee.Number(valMax).multiply(0.02).subtract(273.15).multiply(1000).round().divide(1000); //keep only 3 decimals and convert to Celcius
-          
+
           //stdDev
           var stdDev = filteredImage.reduceRegion({
                   reducer: ee.Reducer.stdDev(),
@@ -86,7 +86,7 @@ var monthlyNDVI =  ee.FeatureCollection(
               });
           var valstdDev = ee.List([ee.Number(stdDev.get(bandname)), -99999]).reduce(ee.Reducer.firstNonNull());
          //valstdDev = ee.Number(valstdDev).multiply(0.02).subtract(273.15).multiply(1000).round().divide(1000); //keep only 3 decimals and convert to Celcius
-          
+
           return ee.Feature(null, {
               'uid' : ee.String(feature.get('HH_ID')).cat('-').cat(ee.String(monList.get(n))),
               'BAD' : feature.get('BAD'),
@@ -105,7 +105,7 @@ var monthlyNDVI =  ee.FeatureCollection(
               'date': monList.get(n),
           });
       }));
-    
+
   })
 ).flatten();
 

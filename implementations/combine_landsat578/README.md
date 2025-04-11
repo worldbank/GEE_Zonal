@@ -1,6 +1,6 @@
 # Combining Landsat 5, 7 & 8 image collections
 
-GEE Javascript script to combine landsat 5 (TM), 7 (ETM+) and 8 (OLI) image collections, including gap-fill algorithm to correct striping in landsat 7 imagery. 
+GEE Javascript script to combine landsat 5 (TM), 7 (ETM+) and 8 (OLI) image collections, including gap-fill algorithm to correct striping in landsat 7 imagery.
 
 # Script
 
@@ -16,8 +16,8 @@ follows GEE tutorial : https://developers.google.com/earth-engine/tutorials/comm
 
 Map.centerObject(table, 7);
 var bbox = table.geometry().bounds();
-                      
-                      
+
+
 //Establish image visualization parameters
 var imageVisParam1 = {bands: ['B5', 'B4', 'B3'], min: 0, max: 5800};
 var imageVisParam2 = {bands: ['B5', 'B4', 'B3'], min: 0, max: 0.58};
@@ -56,7 +56,7 @@ function etmToOli(img) {
       .addBands(img.select('pixel_qa'));
 }
 
-// cloud and shadow masking 
+// cloud and shadow masking
 function fmask(img) {
   var cloudShadowBitMask = 1 << 3;
   var cloudsBitMask = 1 << 5;
@@ -101,12 +101,12 @@ function prepEtm(img) {
   return ee.Image(img.copyProperties(orig, orig.propertyNames()));
 }
 
-// create collections and map the prepEtm/Oli functions on each 
+// create collections and map the prepEtm/Oli functions on each
 var tmCol = ee.ImageCollection("LANDSAT/LT05/C01/T1_SR")
                       .filterDate('2006-09-01', '2013-06-05')
                       .filterBounds(table)
                       .map(prepEtm);
-                      
+
 print("tmCol: ", tmCol);
 
 var etmCol = ee.ImageCollection("LANDSAT/LE07/C01/T1_SR")
@@ -130,7 +130,7 @@ var GapFill = function(image) {
   var start = image.date().advance(-1, 'year');
   var end = image.date().advance(1, 'year');
   var fill = etmCol.filterDate(start, end).median();
-  var regress = fill.addBands(image); 
+  var regress = fill.addBands(image);
   regress = regress.select(regress.bandNames().sort());
   var fit = regress.reduceNeighborhood(ee.Reducer.linearFit().forEach(image.bandNames()), kernel, null, false);
   var offset = fit.select('.*_offset');

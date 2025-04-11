@@ -1,10 +1,10 @@
 var modis = ee.ImageCollection("MODIS/006/MOD13Q1"),
     table = ee.FeatureCollection("users/jbelanger/IELFS_HH_buff_clean");
 
-// takes ~50 min to 9hr to export (depends on server usage) 
+// takes ~50 min to 9hr to export (depends on server usage)
 
-// create feature collection to calculate zonal stats 
-Map.setOptions('SATELLITE');  
+// create feature collection to calculate zonal stats
+Map.setOptions('SATELLITE');
 var shown = true;
 var opacity = 0.5;
 var table = ee.FeatureCollection(table);
@@ -29,10 +29,10 @@ var LSTvis = {
     'ff0000', 'de0101', 'c21301', 'a71001', '911003'
   ],
 };
-    
+
 //========================================================================================================================
 
-// import modis and filter by bounds 
+// import modis and filter by bounds
 var modis = ee.ImageCollection("MODIS/006/MOD11A1").filterBounds(bounds);
 var bandname = 'LST_Day_1km'
 
@@ -75,7 +75,7 @@ var janstat = table.map(function(feature) {
       image.reduceRegion({
         reducer: reducers,
         geometry: feature.geometry(),
-        scale: 1000, 
+        scale: 1000,
         bestEffort: true
       })).copyProperties(feature).copyProperties(image);
   });
@@ -263,7 +263,7 @@ var decstat = table.map(function(feature) {
 print(decstat.first());
 
 
-/// export all data 
+/// export all data
 
 //Export the data to a CSV
 Export.table.toDrive({
@@ -354,7 +354,7 @@ Export.table.toDrive({
   'LST_Day_1km_mean_median','LST_Day_1km_mean_min','LST_Day_1km_mean_stdDev']
 })
 
-//Export the data to a CSV 
+//Export the data to a CSV
 Export.table.toDrive({
   collection:sepstat,
   folder: 'AF_Drought',

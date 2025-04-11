@@ -1,18 +1,18 @@
 /*
 ========================================================================================================================
 
-This analysis seeks to detect landcover change of urban areas over time. It uses Nighttime Lights, Landsat 8, 
+This analysis seeks to detect landcover change of urban areas over time. It uses Nighttime Lights, Landsat 8,
 and Sentinel 1 SAR (Radar) data. Data are sampled to a tessellation of polygons over the AOI, and zonal statistics
-are extracted for each based on month and year. These data are exported to csv files in Drive where they can be 
-downloaded and brought into STATA for further analysis. 
- 
+are extracted for each based on month and year. These data are exported to csv files in Drive where they can be
+downloaded and brought into STATA for further analysis.
+
 Note: If using Landsat 7, Sentinel 2 or other data, some available functions (ex: compositing) may be different.
-  
+
 ========================================================================================================================
 */
- 
-// create feature collection to calculate zonal stats 
-Map.setOptions('SATELLITE'); 
+
+// create feature collection to calculate zonal stats
+Map.setOptions('SATELLITE');
 var shown = true;
 var opacity = 0.5;
 var table = ee.FeatureCollection(table);
@@ -73,7 +73,7 @@ var monthlyImages = years.map(function(year) {
         .filter(ee.Filter.calendarRange(year, year, 'year'))
         .filter(ee.Filter.calendarRange(month, month, 'month'))
         .map(addDate);
-    var monthly = filtered.max(); // get the max pixel value of each 
+    var monthly = filtered.max(); // get the max pixel value of each
     return monthly.set({'month': month, 'year': year});
 });
 }).flatten();
@@ -91,7 +91,7 @@ var reducers = ee.Reducer.mean()
   .combine({reducer2: ee.Reducer.min(), sharedInputs: true})
   .combine({reducer2: ee.Reducer.max(), sharedInputs: true})
   .combine({reducer2: ee.Reducer.median(), sharedInputs: true});
-  
+
 // reduceRegion() on feature collecion
 var ntl_data = table.map(function(feature) {
   return ntl_monthly.map(function(image) {
@@ -131,8 +131,8 @@ var viz_params = {
 
 //--------------------[ LANDSAT 8 ]-----------------------//
 print('//--------------------[ LANDSAT 8 ]-----------------------//');
- 
-// create monthly composite with max values (greenest pixel) where  cloudy pixels are masked. 
+
+// create monthly composite with max values (greenest pixel) where  cloudy pixels are masked.
 //first, check out how many images there are per month in l8sr:
 // is it a 16 day return period (~ 2 images per month)?
 var l8filtered = l8sr.filterBounds(bbox)
@@ -143,14 +143,14 @@ print("landsat collection size:", l8filtered.size());
 
 //----------------- L8: mask cloudy pixels -----------------------//
 print('//----------------- L8: mask cloudy pixels -----------------------//');
- 
+
 // mask cloudy pixels, such that cloud and shadow = 0. does this affect reduce regions mean?
 // mask will be applied in the next step when MOY band is added.
 function maskL8sr(image) {
  var cloudShadowBitMask = (1 << 3);   // bit 3 is cloud shadow
  var cloudsBitMask = (1 << 5);        // bit 5 is clouds
  var qa = image.select('pixel_qa');   // Get the pixel QA band.
- 
+
  // set both flags to zero to indicate clear conditions.
  var mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0)
  .and(qa.bitwiseAnd(cloudsBitMask).eq(0));
@@ -162,14 +162,14 @@ var maskL8sr_min = function(image) {
   var qa = image.select('pixel_qa');
   // If the cloud bit (5) is set and the cloud confidence (7) is high
   // or the cloud shadow bit is set (3), then it's a bad pixel.
-  var cloud = qa.bitwiseAnd(1 << 5)           // 5 = cloud bit 
+  var cloud = qa.bitwiseAnd(1 << 5)           // 5 = cloud bit
                   .and(qa.bitwiseAnd(1 << 7)) // 7 = high cloud confidence
                   .or(qa.bitwiseAnd(1 << 3)); // 3 = bad pixel
   // Remove edge pixels that don't occur in all bands
   var mask2 = image.mask().reduce(ee.Reducer.min()); // this just uses the min value of the pixel, rather than = 0
   //var mask3 = qa.bitwiseAnd(cloud).eq(0); // alternative to the above, set the values = 0
   return image.updateMask(cloud.not()).updateMask(mask2);
-};    
+};
 
 
 //----------------- L8: add MOY band -----------------------//
@@ -198,7 +198,7 @@ var monthlyImages = years.map(function(year) {
         .map(maskL8sr) // this is the one that takes the min of the pixel (doesn't make it zero)
         .map(addDate)
         .select(bands);
-    var monthly = filtered.max(); // get the max pixel value of each 
+    var monthly = filtered.max(); // get the max pixel value of each
     return monthly.set({'month': month, 'year': year});
 });
 }).flatten();
@@ -211,14 +211,14 @@ Map.addLayer(monthlycol.first(), {}, "monthly composite example");
 
 //----------------- L8: calculate NDVI; NDBI; UI -----------------------//
 print('//----------------- L8: calculate NDVI; NDBI; UI -----------------------//');
- 
+
 // set band variables for multi indicator calculation
 var red = monthlycol.select('B4');
 var nir = monthlycol.select('B5');
 var swir1 = monthlycol.select('B6');
 var swir2 = monthlycol.select('B7');
 
-// create function to add indices to images as bands 
+// create function to add indices to images as bands
 function addBands(image){
   var ndvi = image.normalizedDifference(['B5', 'B4']).rename('NDVI'); // ndvi = (nir - red) / (nir + red)
   var ndbi = image.normalizedDifference(['B6', 'B5']).rename('NDBI'); // ndbi = (red - nir) / (red + nir)
@@ -234,7 +234,7 @@ print("filtered w/ indices (first): ", l8sr_bands.first());
 
 //----------------- L8: reduce region -----------------------//
 print('//----------------- L8: reduce region -----------------------//');
- 
+
 // combine reducers
 var reducers = ee.Reducer.mean()
   .combine({reducer2: ee.Reducer.min(), sharedInputs: true})
@@ -281,10 +281,10 @@ print("//----------------- S1: filter image collection -----------------------//
 var start = ee.Date('2014-01-01'); // we only have data 2015 onward for our AOI
 var finish = ee.Date('2019-12-31');
 
-// pull FLOAT ("natural") if you want to do any kind of pixel math/raster calc - otherwise your results will be wrong! 
-// pull GRD if you don't want to filter, as it has already been converted to dB. 
+// pull FLOAT ("natural") if you want to do any kind of pixel math/raster calc - otherwise your results will be wrong!
+// pull GRD if you don't want to filter, as it has already been converted to dB.
 // see https://groups.google.com/u/1/g/google-earth-engine-developers/c/gl6cwbW-7ww/m/T0SBA_OaAAAJ
-var s1collection = ee.ImageCollection('COPERNICUS/S1_GRD') 
+var s1collection = ee.ImageCollection('COPERNICUS/S1_GRD')
 .filterDate(start, finish)
 .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VV'))
 .filter(ee.Filter.eq('instrumentMode', 'IW'))
@@ -301,13 +301,13 @@ Map.addLayer(s1collection.first(), {min:-25, max:-5}, 's1 collection first', 0);
 print("//----------------- S1: add DOY band -----------------------//");
 
 // we do not want monthly composites. we just want one image per month
-// we DO want MOY info added to the images. 
+// we DO want MOY info added to the images.
 
 //create date band (day of year) for each image in collection
 var addDate = function(image){
   var doy = image.date().getRelative('day', 'year');
   var doyBand = ee.Image.constant(doy).uint16().rename('date');
-  
+
   return image.addBands(doyBand);
 };
 
@@ -324,7 +324,7 @@ function ymdList(imgcol){
     return imgcol.iterate(iter_func, ee.List([]));
 }
 var ymd = ymdList(s1_withDate);
-// print count of date frequency to the console. 
+// print count of date frequency to the console.
 print(ee.List(ymd).reduce(ee.Reducer.frequencyHistogram()));
 
 
@@ -334,9 +334,9 @@ print("//----------------- S1: data visualization/differencing -----------------
 // let's play around with visualization parameters to view the difference between two specific dates
 var vizparam = {bands: 'VV', min:-30, max:0, palette:['#00ffff', '#ff0000']};
 
-var start15 = ee.Date('2015-05-01'); 
+var start15 = ee.Date('2015-05-01');
 var finish15 = ee.Date('2015-05-15');
-var start19 = ee.Date('2019-05-01'); 
+var start19 = ee.Date('2019-05-01');
 var finish19 = ee.Date('2019-05-15');
 
 var s1_may15 = s1_withDate.filterDate(start15, finish15).select(0).max();

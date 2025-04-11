@@ -12,7 +12,7 @@ A zonal statistics function was created to ease the process of working with the 
 
 Statistics can be requested at various temporal resolutions (`original` frequency, `monthly`, or `annual`). The workflow conducts pixel-by-pixel temporal aggregations, before summarizing statistics over target features.
 
-Additionaly, the package provides functionality to quickly search the GEE Catalog.
+Additionally, the package provides functionality to quickly search the GEE Catalog.
 
 #### [Documentation Pages](https://worldbank.github.io/GEE_Zonal/)
 
@@ -109,7 +109,7 @@ print(results)
 
 ## Additional Resources
 
-- [geemap](https://geemap.org/): Python libary with more functionality to work with GEE.
+- [geemap](https://geemap.org/): Python library with more functionality to work with GEE.
 - [awesome-gee-community-catalog](https://gee-community-catalog.org/): Extended catalog of EE datasets.
 
 ## License

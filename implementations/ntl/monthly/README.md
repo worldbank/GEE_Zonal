@@ -1,6 +1,6 @@
 # Monthly Zonal statistics - Nighttime Lights
 
-GEE Javascript script to export statistics of monthly NTL by feature in a featureCollection. Outputs to panel dataset. 
+GEE Javascript script to export statistics of monthly NTL by feature in a featureCollection. Outputs to panel dataset.
 
 Timeframe: 2016 to 2020
 
@@ -15,8 +15,8 @@ Reference polygon layer (e.g. administrative divisions or vector grid). To add a
 var ntl = ee.ImageCollection("NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG"),
     table = ee.FeatureCollection("users/jbelanger/IOM_round11_BDG_1kmbuff");
 
-// create feature collection to calculate zonal stats 
-Map.setOptions('SATELLITE'); 
+// create feature collection to calculate zonal stats
+Map.setOptions('SATELLITE');
 var shown = true;
 var opacity = 0.5;
 var table = ee.FeatureCollection(table);
@@ -46,7 +46,7 @@ print("filtered NTL collection: ", ntl_filter);
 Map.addLayer(ntl_filter, {}, "ntl");
 print("ntl collection size:", ntl_filter.size());
 
-//----------------- NTL: add MOY band -----------------------// 
+//----------------- NTL: add MOY band -----------------------//
 print('//----------------- NTL: add MOY band -----------------------//');
 
 // create date band (month of year) for each image in collection
@@ -69,7 +69,7 @@ var monthlyImages = years.map(function(year) {
         .filter(ee.Filter.calendarRange(year, year, 'year'))
         .filter(ee.Filter.calendarRange(month, month, 'month'))
         .map(addDate);
-    var monthly = filtered.max(); // get the max pixel value of each 
+    var monthly = filtered.max(); // get the max pixel value of each
     return monthly.set({'month': month, 'year': year});
 });
 }).flatten();
@@ -88,7 +88,7 @@ var reducers = ee.Reducer.mean()
   .combine({reducer2: ee.Reducer.max(), sharedInputs: true})
   .combine({reducer2: ee.Reducer.median(), sharedInputs: true})
   .combine({reducer2: ee.Reducer.stdDev(), sharedInputs: true});
-  
+
 // reduceRegion() on feature collecion
 var ntl_data = table.map(function(feature) {
   return ntl_monthly.map(function(image) {
@@ -97,7 +97,7 @@ var ntl_data = table.map(function(feature) {
         reducer: reducers,
         geometry: feature.geometry(),
         bestEffort: true,
-        scale: 450 
+        scale: 450
       })).copyProperties(feature).copyProperties(image);
   });
 }).flatten();

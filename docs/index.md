@@ -1,5 +1,7 @@
 # GEE Zonal
 
+[![PyPI version](https://img.shields.io/pypi/v/gee-zonal.svg)](https://pypi.python.org/pypi/gee-zonal)
+
 This python package provides a wrapper function to request temporal and zonal statistics from Google Earth Engine (GEE) datasets.
 
 ## Summary
@@ -8,24 +10,8 @@ A zonal statistics function was created to ease the process of working with the 
 
 Statistics can be requested at various temporal resolutions (`original` frequency, `monthly`, or `annual`). The workflow conducts pixel-by-pixel temporal aggregations, before summarizing statistics over target features.
 
-Additionaly, the package provides functionality to quickly search the GEE Catalog.
+Additionally, the package provides functionality to quickly search the GEE Catalog.
 
-```{note} This project is under active development.
-```
+!!! note
 
-```{toctree}
-:caption: Documentation
-:maxdepth: 1
-
-installation
-usage
-pydrive
-```
-
-```{toctree}
-:caption: Examples
-:maxdepth: 1
-
-zonal_statistics_example
-catalog_example
-```
+    This project is under active development. Feel free to open a new issue or a discussion if you have any questions or suggestions.
