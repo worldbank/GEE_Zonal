@@ -42,7 +42,7 @@ notebook = ["notebook>=6.5.2"]
 "Source" = "https://github.com/worldbank/GEE_Zonal"
 
 [tool.bumpversion]
-current_version = "0.0.1"
+current_version = "0.1.0"
 commit = true
 tag = true
 
@@ -52,6 +52,6 @@ search = 'version = "{current_version}"'
 replace = 'version = "{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "boiler/__init__.py"
+filename = "src/gee_zonal/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
