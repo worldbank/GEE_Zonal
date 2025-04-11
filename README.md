@@ -73,7 +73,7 @@ zs = ZonalStats(
 )
 ```
 
-See docstring for more details on the input parameters for `ZonalStats()` and the [example notebook](./notebooks/Test%20Zonal%20Statistics.ipynb).
+See docstring for more details on the input parameters for `ZonalStats()` and the [example notebook](.docs/examples/zonal_statistics_example.ipynb).
 
 The output statistics can be retrieved directly in the notebook (as a `DataFrame`):
 
